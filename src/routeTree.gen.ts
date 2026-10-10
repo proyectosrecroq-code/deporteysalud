@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as SocioRouteImport } from './routes/socio'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppAgendaRouteImport } from './routes/app.agenda'
+import { Route as AppAjustesRouteImport } from './routes/app.ajustes'
 import { Route as AppEntrenosRouteImport } from './routes/app.entrenos'
 import { Route as AppEstadisticasRouteImport } from './routes/app.estadisticas'
 import { Route as AppFinanzasRouteImport } from './routes/app.finanzas'
@@ -44,6 +45,11 @@ const AppAgendaRoute = AppAgendaRouteImport.update({
   path: '/agenda',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAjustesRoute = AppAjustesRouteImport.update({
+  id: '/ajustes',
+  path: '/ajustes',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEntrenosRoute = AppEntrenosRouteImport.update({
   id: '/entrenos',
   path: '/entrenos',
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/socio': typeof SocioRoute
   '/app/agenda': typeof AppAgendaRoute
+  '/app/ajustes': typeof AppAjustesRoute
   '/app/entrenos': typeof AppEntrenosRoute
   '/app/estadisticas': typeof AppEstadisticasRoute
   '/app/finanzas': typeof AppFinanzasRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/socio': typeof SocioRoute
   '/app/agenda': typeof AppAgendaRoute
+  '/app/ajustes': typeof AppAjustesRoute
   '/app/entrenos': typeof AppEntrenosRoute
   '/app/estadisticas': typeof AppEstadisticasRoute
   '/app/finanzas': typeof AppFinanzasRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/socio': typeof SocioRoute
   '/app/agenda': typeof AppAgendaRoute
+  '/app/ajustes': typeof AppAjustesRoute
   '/app/entrenos': typeof AppEntrenosRoute
   '/app/estadisticas': typeof AppEstadisticasRoute
   '/app/finanzas': typeof AppFinanzasRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/socio'
     | '/app/agenda'
+    | '/app/ajustes'
     | '/app/entrenos'
     | '/app/estadisticas'
     | '/app/finanzas'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
     | '/'
     | '/socio'
     | '/app/agenda'
+    | '/app/ajustes'
     | '/app/entrenos'
     | '/app/estadisticas'
     | '/app/finanzas'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/socio'
     | '/app/agenda'
+    | '/app/ajustes'
     | '/app/entrenos'
     | '/app/estadisticas'
     | '/app/finanzas'
@@ -176,6 +188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAgendaRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/ajustes': {
+      id: '/app/ajustes'
+      path: '/ajustes'
+      fullPath: '/app/ajustes'
+      preLoaderRoute: typeof AppAjustesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/entrenos': {
       id: '/app/entrenos'
       path: '/entrenos'
@@ -209,6 +228,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAgendaRoute: typeof AppAgendaRoute
+  AppAjustesRoute: typeof AppAjustesRoute
   AppEntrenosRoute: typeof AppEntrenosRoute
   AppEstadisticasRoute: typeof AppEstadisticasRoute
   AppFinanzasRoute: typeof AppFinanzasRoute
@@ -218,6 +238,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAgendaRoute: AppAgendaRoute,
+  AppAjustesRoute: AppAjustesRoute,
   AppEntrenosRoute: AppEntrenosRoute,
   AppEstadisticasRoute: AppEstadisticasRoute,
   AppFinanzasRoute: AppFinanzasRoute,

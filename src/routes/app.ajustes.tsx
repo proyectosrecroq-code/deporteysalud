@@ -22,6 +22,7 @@ function Ajustes() {
   const [s, setS] = useState<Settings | null>(null);
   const [preview, setPreview] = useState<{ kind: "members" | "exercises"; rows: any[] } | null>(null);
   const [newCond, setNewCond] = useState({ kind: "lesion", name: "" });
+  const [pendingBackup, setPendingBackup] = useState<any>(null);
   useEffect(() => { if (settings && !s) setS(structuredClone(settings)); }, [settings, s]);
   if (!data || !s) return null;
 
@@ -60,7 +61,6 @@ function Ajustes() {
     const blob = new Blob([JSON.stringify(data, null, 1)], { type: "application/json" });
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `copia_centro_${new Date().toISOString().slice(0, 10)}.json`; a.click();
   };
-  const [pendingBackup, setPendingBackup] = useState<any>(null);
 
   const ListEditor = ({ label, k, placeholder }: { label: string; k: "class_times" | "payment_methods" | "exercise_categories"; placeholder: string }) => {
     const [v, setV] = useState("");
