@@ -8,6 +8,7 @@ export interface Member {
   birth_date: string | null; join_date: string; active: boolean; plan_days: number;
   schedule: Record<string, string>; conditions: string[]; notes: string;
   consent: boolean; consent_date: string | null;
+  recovery_sessions: number; recovery_notes: string;
 }
 export interface Payment { id: string; member_id: string; month: string; amount: number; method: string | null; paid: boolean; paid_at: string | null }
 export interface Exercise { id: string; name: string; category: string }
