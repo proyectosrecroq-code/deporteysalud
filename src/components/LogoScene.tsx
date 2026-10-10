@@ -58,5 +58,5 @@ function Model({ running, onReady }: { running: boolean; onReady: () => void }) 
 }
 
 export default function LogoScene(props: { running: boolean; onReady: () => void }) {
-  return <div className="absolute inset-0" aria-hidden="true"><Canvas camera={{ position: [0, 0, 12], fov: 34 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}><Model {...props} /></Canvas></div>;
+  return <div className="absolute inset-0" aria-hidden="true"><Canvas frameloop={props.running ? 'always' : 'demand'} camera={{ position: [0, 0, 12], fov: 34 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}><Model {...props} /></Canvas></div>;
 }
