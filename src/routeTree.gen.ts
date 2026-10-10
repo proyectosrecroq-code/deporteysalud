@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as SocioRouteImport } from './routes/socio'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppSociosRouteImport } from './routes/app.socios'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,16 +35,23 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSociosRoute = AppSociosRouteImport.update({
+  id: '/socios',
+  path: '/socios',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/socio': typeof SocioRoute
+  '/app/socios': typeof AppSociosRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/socio': typeof SocioRoute
+  '/app/socios': typeof AppSociosRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +59,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/socio': typeof SocioRoute
+  '/app/socios': typeof AppSociosRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/socio' | '/app/'
+  fullPaths: '/' | '/app' | '/socio' | '/app/socios' | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/socio' | '/app'
-  id: '__root__' | '/' | '/app' | '/socio' | '/app/'
+  to: '/' | '/socio' | '/app/socios' | '/app'
+  id: '__root__' | '/' | '/app' | '/socio' | '/app/socios' | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,14 +106,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/socios': {
+      id: '/app/socios'
+      path: '/socios'
+      fullPath: '/app/socios'
+      preLoaderRoute: typeof AppSociosRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppSociosRoute: typeof AppSociosRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppSociosRoute: AppSociosRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
