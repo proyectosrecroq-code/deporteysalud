@@ -11,7 +11,7 @@ export interface Member {
 }
 export interface Payment { id: string; member_id: string; month: string; amount: number; method: string | null; paid: boolean; paid_at: string | null }
 export interface Exercise { id: string; name: string; category: string }
-export interface WorkoutItem { name: string; sets?: string; reps?: string; load?: string }
+export interface WorkoutItem { name: string; sets?: string; reps?: string; load?: string; recordedLoad?: string }
 export interface WorkoutBlock { block: string; items: WorkoutItem[] }
 export interface Workout { id: string; member_id: string; date: string; type: string; title: string; blocks: WorkoutBlock[] }
 export interface Condition { id: string; name: string; kind: "lesion" | "patologia" | "condicion" | "objetivo" }

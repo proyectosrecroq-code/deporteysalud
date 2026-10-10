@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from "recharts";
 import { useAppData, useMutate, currentMonth, lastMonths, monthLabel, fullName, fee } from "@/lib/store";
 import { COLORS, tip } from "@/lib/chart";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/finanzas")({ component: Finanzas });
+export const Route = createFileRoute("/app/finanzas")({ head: () => pageHead("Finanzas", "Ingresos mensuales, cuotas pendientes y métodos de pago."), component: Finanzas });
 
 
 

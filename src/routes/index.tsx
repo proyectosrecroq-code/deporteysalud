@@ -1,8 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Logo, LOGO_URL } from "@/components/Logo";
+import { Logo } from "@/components/Logo";
+import { Intro } from "@/components/Intro";
+import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
 import { ownerLogin } from "@/lib/api.functions";
 
 export const Route = createFileRoute("/")({
@@ -12,33 +15,12 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo funcional." },
       { property: "og:title", content: "Centro Deportivo Funcional — Acceso" },
       { property: "og:description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo funcional." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
 });
-
-const WORDS = ["REMO", "AIRBIKE", "KETTLEBELL", "WALL BALLS", "SLED", "BURPEES", "SKIERG", "DEADLIFT"];
-
-function Intro({ onDone }: { onDone: () => void }) {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    if (i >= WORDS.length) { const t = setTimeout(onDone, 2700); return () => clearTimeout(t); }
-    const t = setTimeout(() => setI(i + 1), 900);
-    return () => clearTimeout(t);
-  }, [i, onDone]);
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-background">
-      <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-24 overflow-hidden"><div className="h-full w-1/2 bg-primary animate-sweep" /></div>
-      <div className="absolute inset-x-0 top-1/2 h-1 translate-y-24 overflow-hidden"><div className="h-full w-1/2 bg-primary animate-sweep" /></div>
-      {i < WORDS.length ? (
-        <h1 key={i} className="animate-flash font-display text-6xl font-black italic text-primary md:text-9xl">{WORDS[i]}</h1>
-      ) : (
-        <img src={LOGO_URL} alt="Logo" className="animate-spin-y-fade h-56 w-56 rounded-2xl object-contain md:h-72 md:w-72" />
-      )}
-      <button onClick={onDone} className="absolute bottom-6 right-6 rounded-full border px-4 py-1.5 text-sm text-muted-foreground hover:text-foreground">Saltar</button>
-    </div>
-  );
-}
 
 function Index() {
   const nav = useNavigate();
@@ -47,7 +29,7 @@ function Index() {
   const [pw, setPw] = useState("");
   const [loading, setLoading] = useState(false);
   useEffect(() => { if (!sessionStorage.getItem("intro_seen")) setIntro(true); }, []);
-  const done = () => { sessionStorage.setItem("intro_seen", "1"); setIntro(false); };
+  const done = useCallback(() => { sessionStorage.setItem("intro_seen", "1"); setIntro(false); }, []);
 
   const enter = async () => {
     setLoading(true);
@@ -64,6 +46,7 @@ function Index() {
       {intro && <Intro onDone={done} />}
       <div className="w-full max-w-sm space-y-8 text-center">
         <Logo size="lg" />
+        <Button variant="ghost" size="sm" onClick={() => setIntro(true)}><RotateCcw />Ver presentación</Button>
         <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Centro deportivo</p>
         <div className="space-y-3">
           <input type="password" className="field text-center" placeholder="Contraseña" value={pw}

@@ -7,8 +7,9 @@ import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { WorkoutEditor } from "@/components/WorkoutEditor";
 import { useAppData, useMutate, currentMonth, fullName, fee, age, KIND_LABEL, type Member } from "@/lib/store";
 import { validateAssignment, DAY_NAMES } from "@/lib/schedule";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/socios")({ component: Socios });
+export const Route = createFileRoute("/app/socios")({ head: () => pageHead("Socios", "Fichas de socios, horarios asignados y entrenamientos personales."), component: Socios });
 
 const empty = (): Partial<Member> => ({
   first_name: "", last_name: "", phone: "", pin: String(Math.floor(1000 + Math.random() * 9000)), birth_date: null,

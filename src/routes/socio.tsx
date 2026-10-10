@@ -13,6 +13,8 @@ export const Route = createFileRoute("/socio")({
       { name: "description", content: "Consulta tus sesiones de la semana y avisa de cambios o ausencias." },
       { property: "og:title", content: "Área de socios — Centro Deportivo Funcional" },
       { property: "og:description", content: "Consulta tus sesiones de la semana y avisa de cambios o ausencias." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: SocioPage,

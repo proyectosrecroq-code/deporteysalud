@@ -9,8 +9,9 @@ import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { useAppData, useMutate, getPw, KIND_LABEL, type Settings } from "@/lib/store";
 import { ownerRestore } from "@/lib/api.functions";
 import { DAYS, DAY_NAMES } from "@/lib/schedule";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/ajustes")({ component: Ajustes });
+export const Route = createFileRoute("/app/ajustes")({ head: () => pageHead("Ajustes", "Tarifas, horarios, ejercicios e importaciones del centro."), component: Ajustes });
 
 const MEMBER_COLS = ["nombre", "apellidos", "telefono", "pin", "fecha_nacimiento", "fecha_alta", "dias_semana", "L", "M", "X", "J", "V", "condiciones", "notas"];
 

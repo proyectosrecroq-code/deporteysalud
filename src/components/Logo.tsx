@@ -1,4 +1,4 @@
-import logo from "@/assets/logo.png.asset.json";
+import logo from "@/assets/logo-transparent.png.asset.json";
 
 export const LOGO_URL = logo.url;
 
@@ -7,7 +7,7 @@ export function Logo({ size = "md", withText = true }: { size?: "sm" | "md" | "l
   const txt = { sm: "text-xl", md: "text-3xl", lg: "text-5xl md:text-6xl" }[size];
   return (
     <div className={`flex items-center gap-3 ${size === "lg" ? "flex-col" : ""}`}>
-      <img src={logo.url} alt="Logo Centro Funcional" className={`${img} rounded-xl object-contain`} />
+      <img src={logo.url} alt="Logo Centro Funcional" className={`${img} object-contain`} />
       {withText && (
         <div className={`font-display font-black uppercase leading-none ${txt}`}>
           <span className="text-foreground">Centro</span> <span className="italic text-primary">Funcional</span>

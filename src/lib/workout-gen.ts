@@ -24,7 +24,7 @@ export function generateWorkout(type: WorkoutType, ex: Exercise[]): { title: str
       ...pick(byCat(ex, "Calentamiento"), 1).map((e) => ({ name: e.name, reps: "5'" })),
       ...pick(byCat(ex, "Activación", "Movilidad"), 2).map((e) => ({ name: e.name, sets: "2", reps: "10" })),
     ] },
-    { block: "Fuerza", items: pick(byCat(ex, "Fuerza"), 3).map((e) => ({ name: e.name, sets: "4", reps: "8", load: "" })) },
+    { block: "Fuerza", items: pick(byCat(ex, "Fuerza"), 3).map((e) => ({ name: e.name, sets: "4", reps: "8" })) },
     { block: "Aeróbico", items: pick(byCat(ex, "Aeróbico"), 3).map((e) => ({ name: e.name, reps: "45\" on / 15\" off ×4" })) },
   ] };
 }
