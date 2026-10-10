@@ -3,6 +3,7 @@ import { Play, Volume2, VolumeX, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LOGO_URL } from '@/components/Logo';
 import footage from '@/assets/gym-intro.mp4.asset.json';
+import alternateFootage from '@/assets/gym-intro.webm.asset.json';
 
 const LogoScene = lazy(() => import('./LogoScene'));
 
@@ -73,7 +74,10 @@ export function Intro({ onDone }: { onDone: () => void }) {
     <div className={`intro-stage fixed inset-0 z-50 overflow-hidden bg-background ${ending ? 'intro-ending' : ''}`} role="dialog" aria-label="Presentación Centro Funcional">
       <Suspense fallback={null}><LogoScene running={phase === 'logo'} onReady={readyScene} /></Suspense>
       {!ready && <img src={LOGO_URL} alt="Centro Funcional" className="absolute inset-0 m-auto h-64 w-64 object-contain" />}
-      <video ref={video} src={footage.url} preload="auto" playsInline muted={muted} aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-contain ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onTimeUpdate={() => { const player = video.current; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)} />
+      <video ref={video} preload="auto" playsInline muted={muted} aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-contain ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onTimeUpdate={() => { const player = video.current; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)}>
+        <source src={footage.url} type="video/mp4" />
+        <source src={alternateFootage.url} type="video/webm" />
+      </video>
       <div className="absolute inset-x-0 top-7 text-center font-display text-xl font-extrabold uppercase text-foreground">Centro <span className="text-primary">Funcional</span></div>
       {phase === 'idle' && <div className="absolute inset-x-0 bottom-24 flex flex-col items-center gap-3 px-6">
         <Button size="lg" onClick={() => void start(true)}><Play />Iniciar con sonido</Button>
