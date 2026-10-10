@@ -48,6 +48,7 @@ function Socios() {
                 {Object.entries(m.schedule ?? {}).map(([d, t]) => <span key={d} className="rounded bg-secondary px-1.5 py-0.5 text-xs">{d} {t}</span>)}
               </div>
               <div className={`mt-2 text-sm font-semibold ${p?.paid ? "text-success" : "text-warning"}`}>{p?.paid ? `Pagado · ${p.method}` : "Pendiente"}</div>
+              {(m.recovery_sessions ?? 0) > 0 && <div className="mt-1 text-xs text-warning">{m.recovery_sessions} sesión(es) por recuperar</div>}
             </button>
           );
         })}
@@ -104,6 +105,23 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
                 <div className="ml-auto flex flex-wrap gap-1">
                   {settings.payment_methods.map((pm) => <button key={pm} onClick={() => markPay(pm)} className={`rounded border px-2 py-0.5 text-xs ${pay?.method === pm && pay.paid ? "border-primary text-primary" : ""}`}>{pm}</button>)}
                   <button onClick={() => markPay(null)} className="rounded border px-2 py-0.5 text-xs text-warning">Pendiente</button>
+                </div>
+              </div>
+            )}
+            {m.id && (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="panel">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Sesiones realizadas</div>
+                  <div className="font-display text-4xl font-black text-primary">{data.workouts.filter((w) => w.member_id === m.id && w.date <= new Date().toLocaleDateString("sv-SE")).length}</div>
+                </div>
+                <div className="panel space-y-2">
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Pendientes de recuperar</div>
+                  <div className="flex items-center gap-2">
+                    <button aria-label="Restar sesión" onClick={() => set("recovery_sessions", Math.max(0, (m.recovery_sessions ?? 0) - 1))} className="rounded-lg border px-3 py-1 text-lg">−</button>
+                    <span className={`font-display text-4xl font-black ${(m.recovery_sessions ?? 0) > 0 ? "text-warning" : "text-muted-foreground"}`}>{m.recovery_sessions ?? 0}</span>
+                    <button aria-label="Sumar sesión" onClick={() => set("recovery_sessions", (m.recovery_sessions ?? 0) + 1)} className="rounded-lg border px-3 py-1 text-lg">+</button>
+                  </div>
+                  <input className="field" placeholder="Motivo (ej. lesión, enfermedad…)" value={m.recovery_notes ?? ""} onChange={(e) => set("recovery_notes", e.target.value)} />
                 </div>
               </div>
             )}

@@ -53,3 +53,40 @@ export function validateAssignment(
   if (regular >= capacity) return `${DAY_NAMES[day]} ${time}: aforo completo (${capacity}/${capacity})`;
   return null;
 }
+
+const ORDER = ["L", "M", "X", "J", "V", "S", "D"];
+const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+/** Monday of the week containing d, shifted by `offset` weeks. */
+export function weekStart(d = new Date(), offset = 0) {
+  const m = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  m.setDate(m.getDate() - ((m.getDay() + 6) % 7) + offset * 7);
+  return m;
+}
+export function dateOfDay(monday: Date, day: string) {
+  const d = new Date(monday); d.setDate(d.getDate() + ORDER.indexOf(day)); return iso(d);
+}
+/** Date a request applies to: first occurrence of its weekday on/after it was created. */
+export function requestDate(createdAt: string, day: string) {
+  const c = new Date(createdAt);
+  const base = new Date(c.getFullYear(), c.getMonth(), c.getDate());
+  const diff = (ORDER.indexOf(day) - ((base.getDay() + 6) % 7) + 7) % 7;
+  base.setDate(base.getDate() + diff);
+  return iso(base);
+}
+interface Req { member_id: string; type: string; day: string | null; desired_time: string | null; status: string; created_at: string }
+/** Schedules for a concrete week, applying approved absences and time changes. */
+export function weekSchedules<T extends SchedMember>(members: T[], requests: Req[], monday: Date): T[] {
+  const dates = new Set(ORDER.map((d) => dateOfDay(monday, d)));
+  const approved = requests.filter((r) => r.status === "aprobado" && r.day && dates.has(requestDate(r.created_at, r.day)));
+  return members.map((m) => {
+    const mine = approved.filter((r) => r.member_id === m.id);
+    if (!mine.length) return m;
+    const schedule = { ...m.schedule };
+    for (const r of mine) {
+      if (r.type === "ausencia") delete schedule[r.day!];
+      else if (r.desired_time) schedule[r.day!] = r.desired_time;
+    }
+    return { ...m, schedule };
+  });
+}
