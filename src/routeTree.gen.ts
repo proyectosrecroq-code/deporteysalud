@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as SocioRouteImport } from './routes/socio'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppAgendaRouteImport } from './routes/app.agenda'
@@ -29,11 +28,6 @@ const IndexRoute = IndexRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SocioRoute = SocioRouteImport.update({
@@ -80,7 +74,6 @@ const AppSociosRoute = AppSociosRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/auth': typeof AuthRoute
   '/socio': typeof SocioRoute
   '/app/agenda': typeof AppAgendaRoute
   '/app/ajustes': typeof AppAjustesRoute
@@ -92,7 +85,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
   '/socio': typeof SocioRoute
   '/app/agenda': typeof AppAgendaRoute
   '/app/ajustes': typeof AppAjustesRoute
@@ -106,7 +98,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
-  '/auth': typeof AuthRoute
   '/socio': typeof SocioRoute
   '/app/agenda': typeof AppAgendaRoute
   '/app/ajustes': typeof AppAjustesRoute
@@ -121,7 +112,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
-    | '/auth'
     | '/socio'
     | '/app/agenda'
     | '/app/ajustes'
@@ -133,7 +123,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
     | '/socio'
     | '/app/agenda'
     | '/app/ajustes'
@@ -146,7 +135,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
-    | '/auth'
     | '/socio'
     | '/app/agenda'
     | '/app/ajustes'
@@ -160,7 +148,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
-  AuthRoute: typeof AuthRoute
   SocioRoute: typeof SocioRoute
 }
 
@@ -178,13 +165,6 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/socio': {
@@ -271,7 +251,6 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
-  AuthRoute: AuthRoute,
   SocioRoute: SocioRoute,
 }
 export const routeTree = rootRouteImport
