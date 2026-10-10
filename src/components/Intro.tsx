@@ -17,6 +17,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
   const [failed, setFailed] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
   const audio = useRef<HTMLAudioElement>(null);
+  const fadeStarted = useRef<number | null>(null);
   const readyScene = useCallback(() => setReady(true), []);
   useEffect(() => {
     const player = video.current;
@@ -34,6 +35,18 @@ export function Intro({ onDone }: { onDone: () => void }) {
     const done = setTimeout(onDone, 4000);
     return () => { clearTimeout(fade); clearTimeout(done); };
   }, [phase, onDone]);
+  useEffect(() => {
+    if (!ending) return;
+    fadeStarted.current = performance.now();
+    const initialVolume = audio.current?.volume ?? .75;
+    const timer = setInterval(() => {
+      const soundtrack = audio.current;
+      const started = fadeStarted.current;
+      if (!soundtrack || started === null) return;
+      soundtrack.volume = initialVolume * Math.max(0, 1 - (performance.now() - started) / 750);
+    }, 30);
+    return () => clearInterval(timer);
+  }, [ending]);
 
   const start = async () => {
     const player = video.current;
