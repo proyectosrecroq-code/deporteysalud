@@ -4,4 +4,4 @@
 - [x] Editar entrenos guardados y registrar cargas posteriores con referencia anterior.
 - [x] Probar intro y guardar/recuperar entreno.
 - [x] Sustituir música de intro por dance hardcore y comprobar reproducción.
-- [ ] Suavizar música a dance, mejorar fluidez y sincronizar audio y vídeo con fade out final.
+- [x] Suavizar música a dance, mejorar fluidez y sincronizar audio y vídeo con fade out final.
