@@ -40,8 +40,8 @@ function Finanzas() {
         <div className="panel lg:col-span-2"><h2 className="mb-2 text-xl font-bold uppercase">Últimos 6 meses</h2>
           <div className="h-60"><ResponsiveContainer><BarChart data={hist}><CartesianGrid stroke="var(--border)" vertical={false} /><XAxis dataKey="mes" stroke="var(--muted-foreground)" fontSize={12} /><YAxis stroke="var(--muted-foreground)" fontSize={12} /><Tooltip {...tip} /><Bar dataKey="cobrado" fill="var(--primary)" radius={[6, 6, 0, 0]} /></BarChart></ResponsiveContainer></div></div>
         <div className="panel"><h2 className="mb-2 text-xl font-bold uppercase">Por método</h2>
-          <div className="h-44"><ResponsiveContainer><PieChart><Pie data={byMethod} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70}>{byMethod.map((_, i) => <Cell key={i} fill={COLORS[i % 5]} />)}</Pie><Tooltip {...tip} /></PieChart></ResponsiveContainer></div>
-          {byMethod.map((b, i) => <div key={b.name} className="flex justify-between text-sm"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: COLORS[i % 5] }} />{b.name}</span><b>{b.value} €</b></div>)}
+          <div className="h-44"><ResponsiveContainer><PieChart><Pie data={byMethod} dataKey="value" nameKey="name" innerRadius={40} outerRadius={70}>{byMethod.map((_, i) => <Cell key={i} fill={COLORS[i % 5]!} />)}</Pie><Tooltip {...tip} /></PieChart></ResponsiveContainer></div>
+          {byMethod.map((b, i) => <div key={b.name} className="flex justify-between text-sm"><span className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: COLORS[i % 5]! }} />{b.name}</span><b>{b.value} €</b></div>)}
         </div>
       </div>
       <div className="panel">

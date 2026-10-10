@@ -16,7 +16,7 @@ export function WorkoutEditor({ memberId }: { memberId: string }) {
   const upd = (bi: number, ii: number, k: string, v: string) => {
     if (!draft) return;
     const blocks = structuredClone(draft.blocks);
-    (blocks[bi].items[ii] as any)[k] = v;
+    (blocks[bi]!.items[ii] as any)[k] = v;
     setDraft({ ...draft, blocks });
   };
   const save = () => {
@@ -42,7 +42,7 @@ export function WorkoutEditor({ memberId }: { memberId: string }) {
           {draft.blocks.map((b, bi) => (
             <div key={bi} className="space-y-1.5">
               <input className="bg-transparent font-display text-lg font-bold uppercase text-primary outline-none" value={b.block}
-                onChange={(e) => { const blocks = structuredClone(draft.blocks); blocks[bi].block = e.target.value; setDraft({ ...draft, blocks }); }} />
+                onChange={(e) => { const blocks = structuredClone(draft.blocks); blocks[bi]!.block = e.target.value; setDraft({ ...draft, blocks }); }} />
               {b.items.map((it, ii) => (
                 <div key={ii} className="grid grid-cols-[1fr_3.5rem_4.5rem_4.5rem_auto] gap-1.5">
                   <select className="field" value={it.name} onChange={(e) => upd(bi, ii, "name", e.target.value)}>
@@ -52,10 +52,10 @@ export function WorkoutEditor({ memberId }: { memberId: string }) {
                   <input className="field" placeholder="Series" value={it.sets ?? ""} onChange={(e) => upd(bi, ii, "sets", e.target.value)} />
                   <input className="field" placeholder="Reps" value={it.reps ?? ""} onChange={(e) => upd(bi, ii, "reps", e.target.value)} />
                   <input className="field" placeholder="Kg" value={it.load ?? ""} onChange={(e) => upd(bi, ii, "load", e.target.value)} />
-                  <button onClick={() => { const blocks = structuredClone(draft.blocks); blocks[bi].items.splice(ii, 1); setDraft({ ...draft, blocks }); }}><Trash2 className="h-4 w-4 text-muted-foreground" /></button>
+                  <button onClick={() => { const blocks = structuredClone(draft.blocks); blocks[bi]!.items.splice(ii, 1); setDraft({ ...draft, blocks }); }}><Trash2 className="h-4 w-4 text-muted-foreground" /></button>
                 </div>
               ))}
-              <button onClick={() => { const blocks = structuredClone(draft.blocks); blocks[bi].items.push({ name: data.exercises[0]?.name ?? "Ejercicio" }); setDraft({ ...draft, blocks }); }}
+              <button onClick={() => { const blocks = structuredClone(draft.blocks); blocks[bi]!.items.push({ name: data.exercises[0]?.name ?? "Ejercicio" }); setDraft({ ...draft, blocks }); }}
                 className="flex items-center gap-1 text-xs text-primary"><Plus className="h-3 w-3" />Añadir ejercicio</button>
             </div>
           ))}
@@ -100,7 +100,7 @@ function LoadProgress({ workouts }: { workouts: Workout[] }) {
   })));
   const names = Object.keys(series);
   const [sel, setSel] = useState<string>("");
-  const ex = sel || names[0];
+  const ex = sel || names[0] || "";
   if (!names.length) return <p className="text-sm text-muted-foreground">La progresión de cargas aparecerá al registrar kg en ejercicios de fuerza.</p>;
   return (
     <div className="panel">

@@ -38,7 +38,7 @@ function Ajustes() {
   };
   const readExcel = async (kind: "members" | "exercises", file: File) => {
     const wb = XLSX.read(await file.arrayBuffer(), { cellDates: false, raw: false });
-    const json: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { raw: false, defval: "" });
+    const json: any[] = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]!]!, { raw: false, defval: "" });
     const rows = kind === "members"
       ? json.filter((r) => r.nombre && r.telefono).map((r) => ({
           first_name: String(r.nombre).trim(), last_name: String(r.apellidos ?? "").trim(), phone: String(r.telefono).trim(),

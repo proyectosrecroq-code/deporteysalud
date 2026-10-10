@@ -8,7 +8,7 @@ import { COLORS, tip } from "@/lib/chart";
 export const Route = createFileRoute("/app/estadisticas")({ component: Stats });
 
 const AGE_GROUPS = [[0, 25, "<25"], [25, 35, "25-34"], [35, 45, "35-44"], [45, 55, "45-54"], [55, 65, "55-64"], [65, 200, "65+"]] as const;
-const ageGroup = (a: number | null) => (a == null ? "—" : AGE_GROUPS.find(([lo, hi]) => a >= lo && a < hi)![2]);
+const ageGroup = (a: number | null) => (a == null ? "—" : AGE_GROUPS.find(([lo, hi]) => a >= lo && a < hi)?.[2] ?? "—");
 
 function Stats() {
   const { data, settings } = useAppData();
@@ -51,7 +51,7 @@ function Stats() {
         <C t="Socios por día"><BarChart data={perDay}><G /><Bar dataKey="socios" fill="var(--primary)" radius={[6, 6, 0, 0]} /></BarChart></C>
         <C t="Socios por hora"><BarChart data={perHour}><G /><Bar dataKey="socios" fill="var(--chart-3)" radius={[6, 6, 0, 0]} /></BarChart></C>
         <C t="Altas últimos 12 meses"><LineChart data={altas}><G /><Line dataKey="altas" stroke="var(--primary)" strokeWidth={3} /></LineChart></C>
-        <C t="Socios por tarifa"><PieChart><Pie data={tariffs} dataKey="value" nameKey="name" outerRadius={80} label={({ name, value }) => `${name}: ${value}`}>{tariffs.map((_, i) => <Cell key={i} fill={COLORS[i % 5]} />)}</Pie><Tooltip {...tip} /></PieChart></C>
+        <C t="Socios por tarifa"><PieChart><Pie data={tariffs} dataKey="value" nameKey="name" outerRadius={80} label={({ name, value }) => `${name}: ${value}`}>{tariffs.map((_, i) => <Cell key={i} fill={COLORS[i % 5]!} />)}</Pie><Tooltip {...tip} /></PieChart></C>
         <C t="Lesiones, patologías y condiciones"><BarChart data={health} layout="vertical"><CartesianGrid stroke="var(--border)" /><XAxis type="number" stroke="var(--muted-foreground)" fontSize={11} allowDecimals={false} /><YAxis type="category" dataKey="name" width={120} stroke="var(--muted-foreground)" fontSize={11} /><Tooltip {...tip} /><Bar dataKey="n" fill="var(--chart-4)" /></BarChart></C>
         <C t="Objetivos"><BarChart data={goals} layout="vertical"><CartesianGrid stroke="var(--border)" /><XAxis type="number" stroke="var(--muted-foreground)" fontSize={11} allowDecimals={false} /><YAxis type="category" dataKey="name" width={120} stroke="var(--muted-foreground)" fontSize={11} /><Tooltip {...tip} /><Bar dataKey="n" fill="var(--primary)" /></BarChart></C>
         <C t="Socios por edad"><BarChart data={byAge}><G /><Bar dataKey="socios" fill="var(--chart-2)" radius={[6, 6, 0, 0]} /></BarChart></C>

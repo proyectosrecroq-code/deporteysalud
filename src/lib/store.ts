@@ -48,7 +48,7 @@ export function useMutate() {
 
 export const currentMonth = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 export const monthLabel = (m: string) => {
-  const [y, mo] = m.split("-").map(Number);
+  const [y = 2000, mo = 1] = m.split("-").map(Number);
   return new Date(y, mo - 1, 1).toLocaleDateString("es-ES", { month: "short", year: "2-digit" });
 };
 export const lastMonths = (n: number) => {

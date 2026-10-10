@@ -8,7 +8,7 @@ export interface SchedMember { id: string; active: boolean; schedule: Sched }
 
 export const toMin = (t: string) => {
   const [h, m] = t.split(":").map(Number);
-  return h * 60 + (m || 0);
+  return (h ?? 0) * 60 + (m || 0);
 };
 export const fromMin = (m: number) =>
   `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
