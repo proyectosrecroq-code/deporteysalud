@@ -109,7 +109,7 @@ function LoadProgress({ workouts }: { workouts: Workout[] }) {
         <select className="field w-48" value={ex} onChange={(e) => setSel(e.target.value)}>{names.map((n) => <option key={n}>{n}</option>)}</select>
       </div>
       <div className="h-48">
-        <ResponsiveContainer><LineChart data={series[ex]}>
+        <ResponsiveContainer><LineChart data={series[ex] ?? []}>
           <CartesianGrid stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={12} /><YAxis stroke="var(--muted-foreground)" fontSize={12} />
           <Tooltip contentStyle={{ background: "var(--card)", border: "1px solid var(--border)" }} />
           <Line dataKey="kg" stroke="var(--primary)" strokeWidth={3} dot />

@@ -15,7 +15,7 @@ export const fromMin = (m: number) =>
 export const isOnHour = (t: string) => toMin(t) % 60 === 0;
 
 export function todayCode(d = new Date()) {
-  return ["D", "L", "M", "X", "J", "V", "S"][d.getDay()];
+  return ["D", "L", "M", "X", "J", "V", "S"][d.getDay()]!;
 }
 
 /** Members in a half-hour slot (e.g. 09:30) plus on-the-hour members overlapping it (09:00 and 10:00). */
