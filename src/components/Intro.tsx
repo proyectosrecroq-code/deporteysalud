@@ -71,9 +71,9 @@ export function Intro({ onDone }: { onDone: () => void }) {
     try { await soundtrack.play(); setMuted(false); } catch { setMuted(true); }
   };
   return (
-    <div className={`intro-stage fixed inset-0 z-50 overflow-hidden bg-background ${ending ? 'intro-ending' : ''}`} role="dialog" aria-label="Presentación Centro Funcional">
+    <div className={`intro-stage fixed inset-0 z-50 overflow-hidden bg-background ${ending ? 'intro-ending' : ''}`} role="dialog" aria-label="Presentación Deporte y Salud">
       <div className={`intro-footage absolute inset-0 ${phase === 'video' && !crossfade ? 'opacity-0' : 'opacity-100'}`}>{(crossfade || phase === 'logo') && <Suspense fallback={null}><LogoScene running={phase === 'logo'} onReady={readyScene} /></Suspense>}</div>
-      {!ready && phase === 'logo' && <img src={LOGO_URL} alt="Centro Funcional" className="absolute inset-0 m-auto h-32 w-32 object-contain" />}
+      {!ready && phase === 'logo' && <img src={LOGO_URL} alt="Deporte y Salud" className="absolute inset-0 m-auto h-32 w-32 object-contain" />}
       <audio ref={audio} src={music.url} preload="auto" />
       <video ref={video} autoPlay preload="auto" playsInline muted aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-cover ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onPlaying={() => { const soundtrack = audio.current; if (!soundtrack) return; soundtrack.currentTime = video.current?.currentTime ?? 0; if (!soundAttempted.current || !muted) { soundAttempted.current = true; void soundtrack.play().then(() => setMuted(false)).catch(() => setMuted(true)); } }} onWaiting={() => audio.current?.pause()} onTimeUpdate={() => { const player = video.current; const soundtrack = audio.current; if (player && soundtrack && !muted && Math.abs(player.currentTime - soundtrack.currentTime) > .15) soundtrack.currentTime = player.currentTime; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)}>
         <source src={footage.url} type="video/mp4" />
