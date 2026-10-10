@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Logo } from "@/components/Logo";
+import { Logo, LOGO_URL } from "@/components/Logo";
 import { ownerLogin } from "@/lib/api.functions";
 
 export const Route = createFileRoute("/")({
@@ -22,7 +22,7 @@ const WORDS = ["REMO", "AIRBIKE", "KETTLEBELL", "WALL BALLS", "SLED", "BURPEES",
 function Intro({ onDone }: { onDone: () => void }) {
   const [i, setI] = useState(0);
   useEffect(() => {
-    if (i >= WORDS.length) { const t = setTimeout(onDone, 1800); return () => clearTimeout(t); }
+    if (i >= WORDS.length) { const t = setTimeout(onDone, 2700); return () => clearTimeout(t); }
     const t = setTimeout(() => setI(i + 1), 900);
     return () => clearTimeout(t);
   }, [i, onDone]);
@@ -33,7 +33,7 @@ function Intro({ onDone }: { onDone: () => void }) {
       {i < WORDS.length ? (
         <h1 key={i} className="animate-flash font-display text-6xl font-black italic text-primary md:text-9xl">{WORDS[i]}</h1>
       ) : (
-        <div className="animate-logo text-center"><Logo size="lg" /></div>
+        <img src={LOGO_URL} alt="Logo" className="animate-spin-y-fade h-56 w-56 rounded-2xl object-contain md:h-72 md:w-72" />
       )}
       <button onClick={onDone} className="absolute bottom-6 right-6 rounded-full border px-4 py-1.5 text-sm text-muted-foreground hover:text-foreground">Saltar</button>
     </div>
