@@ -14,7 +14,228 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conditions: {
+        Row: {
+          id: string
+          kind: string
+          name: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          name: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      exercises: {
+        Row: {
+          category: string
+          id: string
+          name: string
+        }
+        Insert: {
+          category: string
+          id?: string
+          name: string
+        }
+        Update: {
+          category?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      member_requests: {
+        Row: {
+          created_at: string
+          day: string | null
+          desired_time: string | null
+          id: string
+          member_id: string
+          message: string
+          status: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          day?: string | null
+          desired_time?: string | null
+          id?: string
+          member_id: string
+          message?: string
+          status?: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          day?: string | null
+          desired_time?: string | null
+          id?: string
+          member_id?: string
+          message?: string
+          status?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_requests_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      members: {
+        Row: {
+          active: boolean
+          birth_date: string | null
+          conditions: string[]
+          consent: boolean
+          consent_date: string | null
+          created_at: string
+          first_name: string
+          id: string
+          join_date: string
+          last_name: string
+          notes: string
+          phone: string
+          pin: string
+          plan_days: number
+          schedule: Json
+        }
+        Insert: {
+          active?: boolean
+          birth_date?: string | null
+          conditions?: string[]
+          consent?: boolean
+          consent_date?: string | null
+          created_at?: string
+          first_name: string
+          id?: string
+          join_date?: string
+          last_name?: string
+          notes?: string
+          phone: string
+          pin?: string
+          plan_days?: number
+          schedule?: Json
+        }
+        Update: {
+          active?: boolean
+          birth_date?: string | null
+          conditions?: string[]
+          consent?: boolean
+          consent_date?: string | null
+          created_at?: string
+          first_name?: string
+          id?: string
+          join_date?: string
+          last_name?: string
+          notes?: string
+          phone?: string
+          pin?: string
+          plan_days?: number
+          schedule?: Json
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          id: string
+          member_id: string
+          method: string | null
+          month: string
+          paid: boolean
+          paid_at: string | null
+        }
+        Insert: {
+          amount?: number
+          id?: string
+          member_id: string
+          method?: string | null
+          month: string
+          paid?: boolean
+          paid_at?: string | null
+        }
+        Update: {
+          amount?: number
+          id?: string
+          member_id?: string
+          method?: string | null
+          month?: string
+          paid?: boolean
+          paid_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settings: {
+        Row: {
+          data: Json
+          id: number
+        }
+        Insert: {
+          data?: Json
+          id?: number
+        }
+        Update: {
+          data?: Json
+          id?: number
+        }
+        Relationships: []
+      }
+      workouts: {
+        Row: {
+          blocks: Json
+          created_at: string
+          date: string
+          id: string
+          member_id: string
+          title: string
+          type: string
+        }
+        Insert: {
+          blocks?: Json
+          created_at?: string
+          date?: string
+          id?: string
+          member_id: string
+          title?: string
+          type?: string
+        }
+        Update: {
+          blocks?: Json
+          created_at?: string
+          date?: string
+          id?: string
+          member_id?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workouts_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
