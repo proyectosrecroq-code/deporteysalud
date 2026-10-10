@@ -18,14 +18,14 @@ async function verifyOwner(password: string) {
 }
 
 export const ownerLogin = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ password: z.string().max(100) }).parse(d))
+  .validator((d) => z.object({ password: z.string().max(100) }).parse(d))
   .handler(async ({ data }) => {
     await verifyOwner(data.password);
     return { ok: true };
   });
 
 export const ownerLoad = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ password: z.string().max(100) }).parse(d))
+  .validator((d) => z.object({ password: z.string().max(100) }).parse(d))
   .handler(async ({ data }) => {
     const db = await verifyOwner(data.password);
     const out: Record<string, any[]> = {};
@@ -38,7 +38,7 @@ export const ownerLoad = createServerFn({ method: "POST" })
   });
 
 export const ownerMutate = createServerFn({ method: "POST" })
-  .inputValidator((d) =>
+  .validator((d) =>
     z.object({
       password: z.string().max(100),
       table: z.enum(TABLES),
@@ -62,7 +62,7 @@ export const ownerMutate = createServerFn({ method: "POST" })
   });
 
 export const ownerRestore = createServerFn({ method: "POST" })
-  .inputValidator((d) => z.object({ password: z.string().max(100), backup: z.record(z.string(), z.array(z.any())) }).parse(d))
+  .validator((d) => z.object({ password: z.string().max(100), backup: z.record(z.string(), z.array(z.any())) }).parse(d))
   .handler(async ({ data }) => {
     const db = await verifyOwner(data.password);
     for (const t of ["member_requests", "workouts", "payments", "members", "exercises", "conditions"] as Table[])
@@ -87,7 +87,7 @@ async function findMember(phone: string, pin: string) {
 }
 
 export const memberPortal = createServerFn({ method: "POST" })
-  .inputValidator((d) => memberCreds.parse(d))
+  .validator((d) => memberCreds.parse(d))
   .handler(async ({ data }) => {
     const { db, member } = await findMember(data.phone, data.pin);
     const { data: all } = await db.from("members").select("id, first_name, schedule, active").eq("active", true);
@@ -105,7 +105,7 @@ export const memberPortal = createServerFn({ method: "POST" })
   });
 
 export const memberRequest = createServerFn({ method: "POST" })
-  .inputValidator((d) =>
+  .validator((d) =>
     memberCreds.extend({
       type: z.enum(["cambio", "ausencia"]),
       day: z.string().max(2),
