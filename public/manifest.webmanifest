@@ -1,7 +1,7 @@
 {
-  "name": "Centro Deportivo Funcional",
-  "short_name": "CDF",
-  "description": "Gestión del centro deportivo: socios, agenda, entrenos, finanzas y estadísticas.",
+  "name": "Deporte y Salud",
+  "short_name": "Deporte y Salud",
+  "description": "Gestión del centro deportivo Deporte y Salud: socios, agenda, entrenos, finanzas y estadísticas.",
   "lang": "es",
   "start_url": "/",
   "scope": "/",

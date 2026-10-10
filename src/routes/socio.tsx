@@ -9,9 +9,9 @@ import { DAY_NAMES } from "@/lib/schedule";
 export const Route = createFileRoute("/socio")({
   head: () => ({
     meta: [
-      { title: "Área de socios — Centro Deportivo Funcional" },
+      { title: "Área de socios — Deporte y Salud" },
       { name: "description", content: "Consulta tus sesiones de la semana y avisa de cambios o ausencias." },
-      { property: "og:title", content: "Área de socios — Centro Deportivo Funcional" },
+      { property: "og:title", content: "Área de socios — Deporte y Salud" },
       { property: "og:description", content: "Consulta tus sesiones de la semana y avisa de cambios o ausencias." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
