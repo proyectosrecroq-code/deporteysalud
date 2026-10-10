@@ -107,6 +107,8 @@ export type Database = {
           phone: string
           pin: string
           plan_days: number
+          recovery_notes: string
+          recovery_sessions: number
           schedule: Json
         }
         Insert: {
@@ -124,6 +126,8 @@ export type Database = {
           phone: string
           pin?: string
           plan_days?: number
+          recovery_notes?: string
+          recovery_sessions?: number
           schedule?: Json
         }
         Update: {
@@ -141,6 +145,8 @@ export type Database = {
           phone?: string
           pin?: string
           plan_days?: number
+          recovery_notes?: string
+          recovery_sessions?: number
           schedule?: Json
         }
         Relationships: []
