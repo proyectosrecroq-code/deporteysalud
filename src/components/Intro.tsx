@@ -19,6 +19,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
   const audio = useRef<HTMLAudioElement>(null);
   const fadeStarted = useRef<number | null>(null);
   const logoStarted = useRef<number | null>(null);
+  const soundAttempted = useRef(false);
   const readyScene = useCallback(() => setReady(true), []);
   useEffect(() => {
     const player = video.current;
@@ -74,7 +75,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
       <div className={`intro-footage absolute inset-0 ${phase === 'video' && !crossfade ? 'opacity-0' : 'opacity-100'}`}>{(crossfade || phase === 'logo') && <Suspense fallback={null}><LogoScene running={phase === 'logo'} onReady={readyScene} /></Suspense>}</div>
       {!ready && phase === 'logo' && <img src={LOGO_URL} alt="Centro Funcional" className="absolute inset-0 m-auto h-32 w-32 object-contain" />}
       <audio ref={audio} src={music.url} preload="auto" />
-      <video ref={video} autoPlay preload="auto" playsInline muted aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-cover ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onPlaying={() => { const soundtrack = audio.current; if (!soundtrack) return; soundtrack.currentTime = video.current?.currentTime ?? 0; if (!muted) void soundtrack.play().catch(() => setMuted(true)); }} onWaiting={() => audio.current?.pause()} onTimeUpdate={() => { const player = video.current; const soundtrack = audio.current; if (player && soundtrack && !muted && Math.abs(player.currentTime - soundtrack.currentTime) > .15) soundtrack.currentTime = player.currentTime; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)}>
+      <video ref={video} autoPlay preload="auto" playsInline muted aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-cover ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onPlaying={() => { const soundtrack = audio.current; if (!soundtrack) return; soundtrack.currentTime = video.current?.currentTime ?? 0; if (!soundAttempted.current || !muted) { soundAttempted.current = true; void soundtrack.play().then(() => setMuted(false)).catch(() => setMuted(true)); } }} onWaiting={() => audio.current?.pause()} onTimeUpdate={() => { const player = video.current; const soundtrack = audio.current; if (player && soundtrack && !muted && Math.abs(player.currentTime - soundtrack.currentTime) > .15) soundtrack.currentTime = player.currentTime; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)}>
         <source src={footage.url} type="video/mp4" />
         <source src={alternateFootage.url} type="video/webm" />
       </video>
