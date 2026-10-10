@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { LOGO_URL } from '@/components/Logo';
 import footage from '@/assets/gym-intro.mp4.asset.json';
 import alternateFootage from '@/assets/gym-intro.webm.asset.json';
-import music from '@/assets/hyrox-energy.mp3.asset.json';
+import music from '@/assets/dance-hardcore-intro.mp3.asset.json';
 
 const LogoScene = lazy(() => import('./LogoScene'));
 
