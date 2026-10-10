@@ -25,7 +25,7 @@ function Stats() {
   const absences = new Set(data.member_requests.filter((r) => r.type === "ausencia" && r.status === "pendiente").map((r) => r.member_id));
   const bajas = data.members.filter((m) => !m.active || unpaidOld.has(m.id) || absences.has(m.id)).length;
 
-  const perDay = settings.open_days.map((d) => ({ name: DAY_NAMES[d].slice(0, 3), socios: active.filter((m) => m.schedule?.[d]).length }));
+  const perDay = settings.open_days.map((d) => ({ name: (DAY_NAMES[d] ?? d).slice(0, 3), socios: active.filter((m) => m.schedule?.[d]).length }));
   const hours = [...new Set(active.flatMap((m) => Object.values(m.schedule ?? {})))].sort();
   const perHour = hours.map((h) => ({ name: h, socios: active.reduce((s, m) => s + Object.values(m.schedule ?? {}).filter((t) => t === h).length, 0) }));
   const altas = lastMonths(12).map((mo) => ({ name: monthLabel(mo), altas: data.members.filter((m) => m.join_date.startsWith(mo)).length }));

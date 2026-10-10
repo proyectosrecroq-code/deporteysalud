@@ -127,7 +127,7 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
               <div className="grid grid-cols-5 gap-2">
                 {days.map((d) => (
                   <div key={d} className="space-y-1 text-center">
-                    <div className="text-sm font-semibold">{DAY_NAMES[d].slice(0, 3)}</div>
+                    <div className="text-sm font-semibold">{(DAY_NAMES[d] ?? d).slice(0, 3)}</div>
                     <select className="field px-1 text-xs" value={m.schedule?.[d] ?? ""} onChange={(e) => {
                       const s = { ...(m.schedule ?? {}) }; if (e.target.value) s[d] = e.target.value; else delete s[d]; set("schedule", s);
                     }}>
