@@ -1,4 +1,5 @@
 - [ ] Intro 3D con sonido iniciado por pulsación, silencio y repetición.
+- [ ] Añadir vídeo de ejercicios en movimiento antes del logo central girando en eje Y.
 - [ ] Limpiar fondo del logo y conservar detalle.
 - [ ] Editar entrenos guardados y registrar cargas posteriores con referencia anterior.
 - [ ] Probar intro y guardar/recuperar entreno.
