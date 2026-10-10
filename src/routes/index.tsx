@@ -11,10 +11,10 @@ import { ownerLogin } from "@/lib/api.functions";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Centro Deportivo Funcional — Acceso" },
-      { name: "description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo funcional." },
-      { property: "og:title", content: "Centro Deportivo Funcional — Acceso" },
-      { property: "og:description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo funcional." },
+      { title: "Deporte y Salud — Acceso" },
+      { name: "description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo Deporte y Salud." },
+      { property: "og:title", content: "Deporte y Salud — Acceso" },
+      { property: "og:description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo Deporte y Salud." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

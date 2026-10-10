@@ -10,10 +10,10 @@ export const Route = createFileRoute("/app")({
   },
   head: () => ({
     meta: [
-      { title: "Panel — Centro Deportivo Funcional" },
-      { name: "description", content: "Panel de gestión del centro deportivo." },
-      { property: "og:title", content: "Panel — Centro Deportivo Funcional" },
-      { property: "og:description", content: "Panel de gestión del centro deportivo." },
+      { title: "Panel — Deporte y Salud" },
+      { name: "description", content: "Panel de gestión del centro deportivo Deporte y Salud." },
+      { property: "og:title", content: "Panel — Deporte y Salud" },
+      { property: "og:description", content: "Panel de gestión del centro deportivo Deporte y Salud." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
