@@ -12,7 +12,7 @@
 
 ## Pantallas
 
-- **Intro** (vídeo) -> **Acceso**: logo, contraseña, botón Entrar, botón "¿Eres socio? Entra aquí" (teléfono + PIN).
+- **Intro** (vídeo) -> **Acceso**: logo, contraseña, botón Entrar, botón "¿Eres socio? Entra aquí" (teléfono+PIN).
 - **Portal socio**: sus sesiones de la semana, compañeros por hora (solo nombre), solicitar cambio de hora o avisar ausencia con motivo.
 - **Pestañas del dueño**: Inicio, Socios, Agenda, Entrenos, Finanzas, Estadísticas, Ajustes, Salir — con el contenido exacto descrito en tu mensaje.
 
