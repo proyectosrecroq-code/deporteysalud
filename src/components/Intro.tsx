@@ -4,88 +4,66 @@ import { Button } from '@/components/ui/button';
 import { LOGO_URL } from '@/components/Logo';
 import footage from '@/assets/gym-intro.mp4.asset.json';
 import alternateFootage from '@/assets/gym-intro.webm.asset.json';
+import music from '@/assets/hyrox-energy.mp3.asset.json';
 
 const LogoScene = lazy(() => import('./LogoScene'));
 
 export function Intro({ onDone }: { onDone: () => void }) {
-  const [phase, setPhase] = useState<'idle' | 'video' | 'logo'>('idle');
+  const [phase, setPhase] = useState<'video' | 'logo'>('video');
   const [ready, setReady] = useState(false);
   const [muted, setMuted] = useState(true);
   const [ending, setEnding] = useState(false);
   const [crossfade, setCrossfade] = useState(false);
   const [failed, setFailed] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
-  const audio = useRef<AudioContext | null>(null);
-  const gain = useRef<GainNode | null>(null);
+  const audio = useRef<HTMLAudioElement>(null);
   const readyScene = useCallback(() => setReady(true), []);
-  useEffect(() => () => { void audio.current?.close().catch(() => {}); }, []);
+  useEffect(() => {
+    const player = video.current;
+    const soundtrack = audio.current;
+    if (!player || !soundtrack) return;
+    player.muted = true;
+    void player.play().catch(() => setFailed(true));
+    soundtrack.volume = .75;
+    void soundtrack.play().then(() => setMuted(false)).catch(() => setMuted(true));
+    return () => { player.pause(); soundtrack.pause(); };
+  }, []);
   useEffect(() => {
     if (phase !== 'logo') return;
     const fade = setTimeout(() => setEnding(true), 3200);
     const done = setTimeout(onDone, 4000);
-    // Original short rhythmic outro continues the generated clip's soundtrack.
-    const context = audio.current;
-    if (context && gain.current) {
-      for (let beat = 0; beat < 10; beat++) {
-        const at = context.currentTime + beat * .375;
-        const osc = context.createOscillator(), envelope = context.createGain();
-        osc.frequency.setValueAtTime(beat % 4 === 0 ? 140 : 440, at);
-        osc.frequency.exponentialRampToValueAtTime(beat % 4 === 0 ? 45 : 220, at + .15);
-        envelope.gain.setValueAtTime(.001, at); envelope.gain.exponentialRampToValueAtTime(.55, at + .012); envelope.gain.exponentialRampToValueAtTime(.001, at + .22);
-        osc.connect(envelope); envelope.connect(gain.current); osc.start(at); osc.stop(at + .25);
-      }
-    }
     return () => { clearTimeout(fade); clearTimeout(done); };
   }, [phase, onDone]);
 
-  const unlockAudio = () => {
-    try {
-      if (!audio.current) {
-        const Audio = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-        if (Audio) {
-          audio.current = new Audio(); gain.current = audio.current.createGain();
-          gain.current.gain.value = .16; gain.current.connect(audio.current.destination);
-        }
-      }
-      void audio.current?.resume().catch(() => {});
-    } catch { /* The video's own audio remains available. */ }
-  };
-  const start = async (sound: boolean) => {
+  const start = async () => {
     const player = video.current;
     if (!player) return;
     setFailed(false); setCrossfade(false);
-    player.currentTime = 0; player.muted = !sound; player.volume = .75;
-    setMuted(!sound);
-    unlockAudio(); if (gain.current) gain.current.gain.value = sound ? .16 : 0;
+    player.muted = true;
     try { await player.play(); setPhase('video'); }
-    catch {
-      player.muted = true; setMuted(true); if (gain.current) gain.current.gain.value = 0;
-      try { await player.play(); setPhase('video'); } catch { setFailed(true); }
-    }
+    catch { setFailed(true); }
   };
-  const toggleSound = () => {
-    const nextMuted = !muted;
-    unlockAudio();
-    if (video.current) video.current.muted = nextMuted;
-    if (gain.current) gain.current.gain.value = nextMuted ? 0 : .16;
-    setMuted(nextMuted);
+  const toggleSound = async () => {
+    const soundtrack = audio.current;
+    if (!soundtrack) return;
+    if (!muted) { soundtrack.pause(); setMuted(true); return; }
+    soundtrack.currentTime = phase === 'video' ? video.current?.currentTime ?? 0 : 6;
+    try { await soundtrack.play(); setMuted(false); } catch { setMuted(true); }
   };
   return (
     <div className={`intro-stage fixed inset-0 z-50 overflow-hidden bg-background ${ending ? 'intro-ending' : ''}`} role="dialog" aria-label="Presentación Centro Funcional">
       <div className={`intro-footage absolute inset-0 ${phase === 'video' && !crossfade ? 'opacity-0' : 'opacity-100'}`}><Suspense fallback={null}><LogoScene running={phase === 'logo'} onReady={readyScene} /></Suspense></div>
-      {!ready && <img src={LOGO_URL} alt="Centro Funcional" className="absolute inset-0 m-auto h-64 w-64 object-contain" />}
-      <video ref={video} preload="auto" playsInline muted={muted} aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-contain ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onTimeUpdate={() => { const player = video.current; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)}>
+      {!ready && phase === 'logo' && <img src={LOGO_URL} alt="Centro Funcional" className="absolute inset-0 m-auto h-32 w-32 object-contain" />}
+      <audio ref={audio} src={music.url} preload="auto" />
+      <video ref={video} autoPlay preload="auto" playsInline muted aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-cover ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onTimeUpdate={() => { const player = video.current; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)}>
         <source src={footage.url} type="video/mp4" />
         <source src={alternateFootage.url} type="video/webm" />
       </video>
-      <div className="absolute inset-x-0 top-7 text-center font-display text-xl font-extrabold uppercase text-foreground">Centro <span className="text-primary">Funcional</span></div>
-      {phase === 'idle' && <div className="absolute inset-x-0 bottom-24 flex flex-col items-center gap-3 px-6">
-        <Button size="lg" onClick={() => void start(true)}><Play />Iniciar con sonido</Button>
-        <Button variant="ghost" onClick={() => void start(false)}>Ver sin sonido</Button>
-        {failed && <p className="text-sm text-destructive">No se pudo reproducir. Vuelve a intentarlo o pulsa Saltar.</p>}
+      {failed && <div className="absolute inset-x-0 bottom-24 flex flex-col items-center gap-3 px-6">
+        <Button size="lg" onClick={() => void start()}><Play />Reproducir vídeo</Button>
       </div>}
       <div className="absolute inset-x-0 bottom-5 flex items-center justify-between px-5">
-        <Button variant="outline" size="icon" onClick={toggleSound} aria-label={muted ? 'Activar sonido' : 'Silenciar sonido'} title={muted ? 'Activar sonido' : 'Silenciar sonido'}>{muted ? <VolumeX /> : <Volume2 />}</Button>
+        <Button variant="outline" size="icon" onClick={() => void toggleSound()} aria-label={muted ? 'Activar sonido' : 'Silenciar sonido'} title={muted ? 'Activar sonido' : 'Silenciar sonido'}>{muted ? <VolumeX /> : <Volume2 />}</Button>
         <Button variant="ghost" onClick={onDone}><SkipForward />Saltar</Button>
       </div>
     </div>

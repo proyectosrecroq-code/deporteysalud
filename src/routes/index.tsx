@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Logo } from "@/components/Logo";
@@ -25,11 +25,10 @@ export const Route = createFileRoute("/")({
 function Index() {
   const nav = useNavigate();
   const login = useServerFn(ownerLogin);
-  const [intro, setIntro] = useState(false);
+  const [intro, setIntro] = useState(true);
   const [pw, setPw] = useState("");
   const [loading, setLoading] = useState(false);
-  useEffect(() => { if (!sessionStorage.getItem("intro_seen")) setIntro(true); }, []);
-  const done = useCallback(() => { sessionStorage.setItem("intro_seen", "1"); setIntro(false); }, []);
+  const done = useCallback(() => setIntro(false), []);
 
   const enter = async () => {
     setLoading(true);
@@ -44,7 +43,7 @@ function Index() {
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
       {intro && <Intro onDone={done} />}
-      <div className="w-full max-w-sm space-y-8 text-center">
+      {!intro && <div className="w-full max-w-sm space-y-8 text-center">
         <Logo size="lg" />
         <Button variant="ghost" size="sm" onClick={() => setIntro(true)}><RotateCcw />Ver presentación</Button>
         <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Centro deportivo</p>
@@ -59,7 +58,7 @@ function Index() {
         <button onClick={() => nav({ to: "/socio" })} className="w-full rounded-lg border border-primary/40 py-3 text-sm hover:bg-accent">
           ¿Eres socio? <span className="font-semibold text-primary">Entra aquí</span>
         </button>
-      </div>
+      </div>}
     </main>
   );
 }
