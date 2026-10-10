@@ -67,11 +67,11 @@ export function WorkoutEditor({ memberId }: { memberId: string }) {
           {block.items.map((item, ii) => {
             const last = previousLoad(history, item.name, draft.date, draft.id);
             return <div key={ii} className="space-y-1 border-b border-border pb-3">
-              <div className="grid grid-cols-[1fr_auto] gap-2 sm:grid-cols-[minmax(0,1fr)_5rem_7rem_auto]">
-                <label className="min-w-0 text-xs text-muted-foreground">Ejercicio<select aria-label={`Ejercicio ${bi + 1}-${ii + 1}`} className="field mt-1" value={item.name} onChange={e => updateItem(bi, ii, 'name', e.target.value)}><option>{item.name}</option>{data.exercises.filter(e => e.name !== item.name).map(e => <option key={e.id}>{e.name}</option>)}</select></label>
+              <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_2.25rem] gap-2 sm:grid-cols-[minmax(0,1fr)_5rem_7rem_auto]">
+                <label className="col-span-2 min-w-0 text-xs text-muted-foreground sm:col-span-1">Ejercicio<select aria-label={`Ejercicio ${bi + 1}-${ii + 1}`} className="field mt-1" value={item.name} onChange={e => updateItem(bi, ii, 'name', e.target.value)}><option>{item.name}</option>{data.exercises.filter(e => e.name !== item.name).map(e => <option key={e.id}>{e.name}</option>)}</select></label>
                 <label className="col-start-1 text-xs text-muted-foreground sm:col-start-auto">Series<input aria-label={`Series ${bi + 1}-${ii + 1}`} className="field mt-1" value={item.sets ?? ''} onChange={e => updateItem(bi, ii, 'sets', e.target.value)} /></label>
                 <label className="text-xs text-muted-foreground">Reps / tiempo<input aria-label={`Repeticiones ${bi + 1}-${ii + 1}`} className="field mt-1" value={item.reps ?? ''} onChange={e => updateItem(bi, ii, 'reps', e.target.value)} /></label>
-                <Button variant="ghost" size="icon" className="col-start-2 row-start-1 self-end sm:col-start-auto sm:row-start-auto" aria-label={`Quitar ejercicio ${bi + 1}-${ii + 1}`} title="Quitar ejercicio" onClick={() => updateBlock(bi, b => { b.items.splice(ii, 1); })}><Trash2 /></Button>
+                <Button variant="ghost" size="icon" className="col-start-3 row-start-1 self-end sm:col-start-auto sm:row-start-auto" aria-label={`Quitar ejercicio ${bi + 1}-${ii + 1}`} title="Quitar ejercicio" onClick={() => updateBlock(bi, b => { b.items.splice(ii, 1); })}><Trash2 /></Button>
               </div>
               <div className="flex flex-wrap items-end gap-4 pt-2">
                 {canRecordLoad(draft.date, today) && <label className="w-40 text-xs text-muted-foreground">Peso final realizado (kg)<input type="number" min="0" step="0.5" aria-label={`Peso final realizado ${bi + 1}-${ii + 1}`} className="field mt-1" placeholder="Sin registrar" value={item.recordedLoad ?? ''} onChange={e => updateItem(bi, ii, 'recordedLoad', e.target.value)} /></label>}

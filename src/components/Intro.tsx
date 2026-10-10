@@ -72,7 +72,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
   };
   return (
     <div className={`intro-stage fixed inset-0 z-50 overflow-hidden bg-background ${ending ? 'intro-ending' : ''}`} role="dialog" aria-label="Presentación Centro Funcional">
-      <Suspense fallback={null}><LogoScene running={phase === 'logo'} onReady={readyScene} /></Suspense>
+      <div className={`intro-footage absolute inset-0 ${phase === 'video' && !crossfade ? 'opacity-0' : 'opacity-100'}`}><Suspense fallback={null}><LogoScene running={phase === 'logo'} onReady={readyScene} /></Suspense></div>
       {!ready && <img src={LOGO_URL} alt="Centro Funcional" className="absolute inset-0 m-auto h-64 w-64 object-contain" />}
       <video ref={video} preload="auto" playsInline muted={muted} aria-label="Ejercicios de remo, airbike y kettlebell" className={`intro-footage absolute inset-0 h-full w-full bg-background object-contain ${phase === 'video' && !crossfade ? 'opacity-100' : 'pointer-events-none opacity-0'}`} onTimeUpdate={() => { const player = video.current; if (player && player.duration && player.currentTime > player.duration - .4) setCrossfade(true); }} onEnded={() => setPhase('logo')} onError={() => setFailed(true)}>
         <source src={footage.url} type="video/mp4" />
