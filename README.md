@@ -1,14 +1,27 @@
-# Welcome to your Lovable project
+# Deporteysalud
+
+Crear nuevo proyecto: CENTRO DEPORTIVO FUNCIONAL para el que se va a generar una aplicación completa para el dueño/propietario de la empresa (también podrán tener acceso los usuarios del centro deportivo, a través de su número de teléfono, para ver qué sesiones tienen esa semana, con qué otros usuarios están a esa hora, por tema de Ley de Protección de Datos, solo y únicamente podrán ver el nombre, los apellidos solo los puede ver el dueño/propietario de la empresa; además podrán solicitar el cambio de hora o comunicar al dueño que no pueden acudir a alguna sesión de esa semana indicando el motivo). La aplicación debe ser responsive y con CSS y HTML, con una base de datos que se integrará en GitHub. La aplicación empezará con un vídeo corto con ejercicios/máquinas de gimnasio como remo, airbike, kettleball, etc, de 8-10 segundos con mucho ritmo, terminando con el logotipo del centro deportivo (que te aportaré a posteriori para integrar en el vídeo y en la aplicación). Una vez terminado el video aparece una pantalla de acceso con el logo del centro deportivo, un apartado para introducir una contraseña que indicaremos a posteriori, de momento acceso libre, abajo un botón para entrar a la aplicación y debajo de éste, otro botón con una opción para acceso a usuarios/socios que indique ¿Eres socio? Entra aquí, una vez pulsado el botón aparecerá un submenú para introducir el número de teléfono del socio con las opciones de visualización que he indicado antes. Una vez dentro de la aplicación tendremos unas pestañas de INICIO, SOCIOS/USUARIOS, AGENDA, ENTRENOS, FINANZAS, ESTADÍSTICAS Y AJUSTES.
+En INICIO nos ofrecerá una vista completa como en tarjetas con el tamaño correspondiente según la información a mostrar, donde encontraremos Socios Activos actuales, Vienen hoy (según el día), Cobrado en el "mes", Cuotas pendientes, Hoy en el Centro: Los socios que van ese día, Los Entrenos de Ese día, Avisos de socios (cuando piden cambio de clase o que no pueden acudir a alguna), Avisos de Cuotas pendientes, indicando los socios que tiene pendiente los pagos de ese mes o de meses anteriores, incluso el día de esa semana que cumple años alguno de los socios por darle alguna sorpresa o simplemente por felicitarle ese día.
+En SOCIOS, además de un buscador por nombre o número de teléfono y de un botón para añadir socio nuevo, tendremos en formato tarjetas a todos los socios con un mínimo de información antes de pulsar en cada uno de ellos, donde aparezca Nombre completo, los días que tiene entreno, número de teléfono y si ha pagado y por cual medio. Si pinchas en uno de los socios nos aparecerá si ha pagado la cuota de ese mes en cuestión, los entrenos y sesiones (pudiendo añadir nuevos entrenos o generar entrenos automáticos, de calentamiento/activación, fuerza y aeróbico, incluso WODs), también se podrá ver la progresión de cargas en los ejercicios de fuerza que haya tenido en sesiones anteriores, Nombre completo, teléfono, fecha de nacimiento, fecha de alta en el centro deportivo, si es socio activo o inactivo (porque ese mes haya indicado que no puede ir o que se ha dado de baja temporal en el centro), la tarifa que está pagando, si es de 2 días, 3 días o 4 días semanales, 90-120-150 euros, las horas de entrenamiento, (siendo las horas normales las medias y pudiendo poner a algún usuario en horas en punto, solapando sesiones, pero solo puede haber un solo usuario que solape dos sesiones de medias, para que en la sala haya un máximo de 7 usuarios siempre, 6 usuarios máximo de horario de medias ), días elegidos de lunes a viernes (sábado y domingo está cerrado), una lista de posibles lesiones, patologías, condiciones u objetivos por el que el usuario está en el centro (el programa debe crear un mínimo de 20 casuísticas, que se podrán ampliar mediante un botón de añadir lesión, añadir patología, añadir condición y añadir objetivo, todo esto siempre cumpliendo con la ley de protección de datos en España), un apartado de Notas para indicar cualquier otro tema que sea interesante para facilitar el mejor entrenamiento o recuperación en el centro. Con sus botones de Guardar o Eliminar
+La AGENDA, donde aparecerán todas las sesiones agrupadas por horas diarias y en formato semanal, siempre con un aforo de sala por hora de 6 personas con un máximo de una persona que solape en la hora en punto. En cada sesión se indicará el número de personas que hay, por ejemplo 4/6 o 6/6 o 7/6 si hay un caso de solapamiento de horas, ese número aparecerá en rojo y el resto de números cuando no haya solapamiento en verde
+ENTRENOS, donde se podrá elegir el socio y crearle el entreno, generarle un entreno completo, un WODs (modificable), un Hyrox (modificable) o ejercicios sueltos. También se verá el histórico de ese socio/usuario de los últimos 4 entrenos.
+En FINANZAS, mediante información tipo tarjetas o dashboard dinámico se podrá ver lo qeu se ha cobrado a los socios ese mes, el pendiente de cuotas, el previsto de cobros total, el porcentaje de cobro, el historial de cobro total de los últimos 6 meses, cobros realizados según método de cobro (BIZUM, EFECTIVO, TARJETA o TRANSFERENCIA). Cuotas del mes de cada uno de los socios (donde se ve cuantos días semanales va y cual es su cuota mensual) que puedas pinchar la forma de cobro y dejarlo como cobrado o pendiente.
+En ESTADÍSTICAS, nos mostrará como va el centro: la ocupación semanal con un porcentaje de plazas totales respecto a las plazas que tenemos ocupadas, el Ingreso mensual previsto que ya habíamos visto antes en Finanzas, la edad media de los usuarios, el número de posibles bajas, en un dashboard dinámico, Socios por día, Socios por hora, Altas de últimos 12 meses, un gráfico de cuantos socios según tarifa/días de entreno, un gráfico de lesiones, patologías y condiciones, otro gráfico con objetivos, otro gráfico de barras de socios por edad, otro de antiguedad de los socios, un cuadrante de tarifas según edad y otro de ÓBjetivos según edad.
+En Ajustes: también mediante tipo tarjetas, Una posibilidad de importar una plantilla tanto de socios como de ejercicios según plantilla que me debes crear en excel para que se pueda importar, si el dueño/propietario del centro no quiere meter todos los datos a mano (teniendo una vista previa antes de guardar nada). Ajustes en tarifas y aforo para que se pueda modificar en cualquier momento el precio de las sesiones semanales o del aforo por clase. Ajuste de días de apertura, ajuste de horas de clase, ajuste de métodos de pago, ajuste de categorías de ejercicio, ajuste de tipo de lesiones, patologías condiciones y objetivos. Botón de Guardar Ajustes, Botón de guardar copia de seguridad, botón de importar copia de seguridad, botón de eliminar base de datos de usuarios, botón de eliminar de base de datos de ejercicios, todo esto con una doble seguridad, siempre hay que confirmar la eliminación de datos.
+y un botón de Salir
+Todo esto en una interfaz sencilla, amigable, mezclando un fondo oscuro con grises, blancos y verdes lima igual que el logotipo que te integraré en breve. Aún así, si me tienes que indicar cualquier tipo de mejora me lo haces saber antes de empezar a crear todo esto.
 
 This project was built with [Lovable](https://lovable.dev).
 
+**Live app**: https://deporteysalud.lovable.app
+
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/9fd64fd0-5ec0-478f-8629-02d53896af95).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +33,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
