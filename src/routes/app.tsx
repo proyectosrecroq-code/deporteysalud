@@ -14,6 +14,8 @@ export const Route = createFileRoute("/app")({
       { name: "description", content: "Panel de gestión del centro deportivo." },
       { property: "og:title", content: "Panel — Centro Deportivo Funcional" },
       { property: "og:description", content: "Panel de gestión del centro deportivo." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AppLayout,
