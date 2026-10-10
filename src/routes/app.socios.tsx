@@ -54,7 +54,6 @@ function Socios() {
       {edit && <MemberDialog member={edit} onClose={() => setEdit(null)} />}
     </div>
   );
-  void settings;
 }
 
 function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: () => void }) {

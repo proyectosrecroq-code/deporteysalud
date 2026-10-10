@@ -13,6 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as SocioRouteImport } from './routes/socio'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppAgendaRouteImport } from './routes/app.agenda'
+import { Route as AppEntrenosRouteImport } from './routes/app.entrenos'
+import { Route as AppEstadisticasRouteImport } from './routes/app.estadisticas'
+import { Route as AppFinanzasRouteImport } from './routes/app.finanzas'
 import { Route as AppSociosRouteImport } from './routes/app.socios'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +39,26 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAgendaRoute = AppAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEntrenosRoute = AppEntrenosRouteImport.update({
+  id: '/entrenos',
+  path: '/entrenos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEstadisticasRoute = AppEstadisticasRouteImport.update({
+  id: '/estadisticas',
+  path: '/estadisticas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinanzasRoute = AppFinanzasRouteImport.update({
+  id: '/finanzas',
+  path: '/finanzas',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSociosRoute = AppSociosRouteImport.update({
   id: '/socios',
   path: '/socios',
@@ -45,12 +69,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/socio': typeof SocioRoute
+  '/app/agenda': typeof AppAgendaRoute
+  '/app/entrenos': typeof AppEntrenosRoute
+  '/app/estadisticas': typeof AppEstadisticasRoute
+  '/app/finanzas': typeof AppFinanzasRoute
   '/app/socios': typeof AppSociosRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/socio': typeof SocioRoute
+  '/app/agenda': typeof AppAgendaRoute
+  '/app/entrenos': typeof AppEntrenosRoute
+  '/app/estadisticas': typeof AppEstadisticasRoute
+  '/app/finanzas': typeof AppFinanzasRoute
   '/app/socios': typeof AppSociosRoute
   '/app': typeof AppIndexRoute
 }
@@ -59,15 +91,46 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/socio': typeof SocioRoute
+  '/app/agenda': typeof AppAgendaRoute
+  '/app/entrenos': typeof AppEntrenosRoute
+  '/app/estadisticas': typeof AppEstadisticasRoute
+  '/app/finanzas': typeof AppFinanzasRoute
   '/app/socios': typeof AppSociosRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/socio' | '/app/socios' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/socio'
+    | '/app/agenda'
+    | '/app/entrenos'
+    | '/app/estadisticas'
+    | '/app/finanzas'
+    | '/app/socios'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/socio' | '/app/socios' | '/app'
-  id: '__root__' | '/' | '/app' | '/socio' | '/app/socios' | '/app/'
+  to:
+    | '/'
+    | '/socio'
+    | '/app/agenda'
+    | '/app/entrenos'
+    | '/app/estadisticas'
+    | '/app/finanzas'
+    | '/app/socios'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/socio'
+    | '/app/agenda'
+    | '/app/entrenos'
+    | '/app/estadisticas'
+    | '/app/finanzas'
+    | '/app/socios'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +169,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/agenda': {
+      id: '/app/agenda'
+      path: '/agenda'
+      fullPath: '/app/agenda'
+      preLoaderRoute: typeof AppAgendaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/entrenos': {
+      id: '/app/entrenos'
+      path: '/entrenos'
+      fullPath: '/app/entrenos'
+      preLoaderRoute: typeof AppEntrenosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/estadisticas': {
+      id: '/app/estadisticas'
+      path: '/estadisticas'
+      fullPath: '/app/estadisticas'
+      preLoaderRoute: typeof AppEstadisticasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/finanzas': {
+      id: '/app/finanzas'
+      path: '/finanzas'
+      fullPath: '/app/finanzas'
+      preLoaderRoute: typeof AppFinanzasRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/socios': {
       id: '/app/socios'
       path: '/socios'
@@ -117,11 +208,19 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppAgendaRoute: typeof AppAgendaRoute
+  AppEntrenosRoute: typeof AppEntrenosRoute
+  AppEstadisticasRoute: typeof AppEstadisticasRoute
+  AppFinanzasRoute: typeof AppFinanzasRoute
   AppSociosRoute: typeof AppSociosRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAgendaRoute: AppAgendaRoute,
+  AppEntrenosRoute: AppEntrenosRoute,
+  AppEstadisticasRoute: AppEstadisticasRoute,
+  AppFinanzasRoute: AppFinanzasRoute,
   AppSociosRoute: AppSociosRoute,
   AppIndexRoute: AppIndexRoute,
 }

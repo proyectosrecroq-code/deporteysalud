@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from "recharts";
 import { useAppData, useMutate, currentMonth, lastMonths, monthLabel, fullName, fee } from "@/lib/store";
+import { COLORS, tip } from "@/lib/chart";
 
 export const Route = createFileRoute("/app/finanzas")({ component: Finanzas });
-export const COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
-export const tip = { contentStyle: { background: "var(--card)", border: "1px solid var(--border)", color: "var(--foreground)" } };
+
+
 
 function Finanzas() {
   const { data, settings } = useAppData();

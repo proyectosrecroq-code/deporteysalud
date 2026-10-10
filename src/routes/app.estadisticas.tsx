@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import type { ReactNode } from "react";
 import { useAppData, currentMonth, lastMonths, monthLabel, age, fee, KIND_LABEL } from "@/lib/store";
 import { DAY_NAMES } from "@/lib/schedule";
-import { COLORS, tip } from "./app.finanzas";
+import { COLORS, tip } from "@/lib/chart";
 
 export const Route = createFileRoute("/app/estadisticas")({ component: Stats });
 
