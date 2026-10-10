@@ -46,17 +46,17 @@ function Model({ running, onReady }: { running: boolean; onReady: () => void }) 
   return <>
     <ambientLight intensity={.8} />
     <directionalLight position={[4, 5, 7]} intensity={2} color={foreground} />
-    <Environment resolution={128}>
+    <Environment resolution={32}>
       <Lightformer intensity={2} position={[0, 5, 4]} scale={[10, 4, 1]} color={foreground} />
       <Lightformer intensity={1} position={[-5, 1, -2]} rotation-y={Math.PI / 2} scale={[12, 1, 1]} color={primary} />
     </Environment>
     <group ref={group} scale={.5}>
       {geometries.map((geometry, i) => <mesh key={i} geometry={geometry}><meshStandardMaterial color={primary} metalness={.25} roughness={.3} /></mesh>)}
-      <mesh position={[0, (outlines.height / 2 - 54) / 100, 0]}><sphereGeometry args={[.365, 64, 48]} /><meshStandardMaterial color={foreground} metalness={.15} roughness={.25} /></mesh>
+      <mesh position={[0, (outlines.height / 2 - 54) / 100, 0]}><sphereGeometry args={[.365, 32, 24]} /><meshStandardMaterial color={foreground} metalness={.15} roughness={.25} /></mesh>
     </group>
   </>;
 }
 
 export default function LogoScene(props: { running: boolean; onReady: () => void }) {
-  return <div className="absolute inset-0" aria-hidden="true"><Canvas frameloop={props.running ? 'always' : 'demand'} camera={{ position: [0, 0, 12], fov: 34 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}><Model {...props} /></Canvas></div>;
+  return <div className="absolute inset-0" aria-hidden="true"><Canvas frameloop={props.running ? 'always' : 'demand'} camera={{ position: [0, 0, 12], fov: 34 }} dpr={1} gl={{ antialias: true, alpha: true }}><Model {...props} /></Canvas></div>;
 }
