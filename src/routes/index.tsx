@@ -58,6 +58,9 @@ function Index() {
         <button onClick={() => nav({ to: "/socio" })} className="w-full rounded-lg border border-primary/40 py-3 text-sm hover:bg-accent">
           ¿Eres socio? <span className="font-semibold text-primary">Entra aquí</span>
         </button>
+        <button onClick={() => nav({ to: "/auth" })} className="text-sm text-muted-foreground hover:text-foreground">
+          Entrar o registrarse con email
+        </button>
       </div>}
     </main>
   );
