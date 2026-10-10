@@ -70,11 +70,11 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
   const times = [...settings.class_times, ...settings.class_times.map((t) => t.replace(":30", ":00")).filter((t) => !settings.class_times.includes(t))].sort();
 
   const save = () => {
-    if (!m.first_name?.trim() || !m.phone?.trim()) return toast.error("Nombre y teléfono son obligatorios");
+    if (!m.first_name?.trim() || !m.phone?.trim()) { toast.error("Nombre y teléfono son obligatorios"); return; }
     if (Object.keys(m.schedule ?? {}).length !== m.plan_days) toast.warning(`La tarifa es de ${m.plan_days} días y tiene ${Object.keys(m.schedule ?? {}).length} asignados`);
     for (const [d, t] of Object.entries(m.schedule ?? {})) {
       const err = validateAssignment(data.members, m.id ?? null, d, t, settings.capacity, settings.overlap_max);
-      if (err && m.active) return toast.error(err);
+      if (err && m.active) { toast.error(err); return; }
     }
     const row = { ...m, consent_date: m.consent ? m.consent_date ?? new Date().toISOString().slice(0, 10) : null };
     mut.mutate({ table: "members", action: "upsert", rows: [row] }, { onSuccess: () => { toast.success("Socio guardado"); onClose(); } });
