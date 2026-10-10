@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useAppData, fullName } from "@/lib/store";
 import { slotMembers, DAY_NAMES, todayCode } from "@/lib/schedule";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/agenda")({ component: Agenda });
+export const Route = createFileRoute("/app/agenda")({ head: () => pageHead("Agenda semanal", "Sesiones semanales y ocupación de las clases del centro."), component: Agenda });
 
 function Agenda() {
   const { data, settings } = useAppData();

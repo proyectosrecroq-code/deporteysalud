@@ -13,3 +13,7 @@
 - All data access goes through server functions in src/lib/api.functions.ts using the admin client; tables have RLS with no client policies. Why: owner has no account yet (password from settings), and member health data must never be readable from the browser.
 - Member portal returns only first names of other members. Why: Spanish data-protection requirement.
 - Room capacity/overlap rules live in src/lib/schedule.ts (tested). Why: single source for agenda counts and validation.
+- Intro uses a lazily imported Three.js scene with vector-derived logo geometry and gesture-started Web Audio. Why: smooth scalable logo rendering without audio autoplay failures or server-side WebGL imports.
+- Completed workout loads use blocks.items.recordedLoad; legacy load values are not inferred as results. Why: planned loads must never become historical performance accidentally.
+- Workout load reference and date eligibility live in src/lib/workout-loads.ts with tests. Why: editing and progression must share the same result semantics.
+- Leaf metadata uses src/lib/page-head.ts for administration sections. Why: each screen has its own descriptive share title.

@@ -4,8 +4,9 @@ import type { ReactNode } from "react";
 import { useAppData, currentMonth, lastMonths, monthLabel, age, fee, KIND_LABEL } from "@/lib/store";
 import { DAY_NAMES } from "@/lib/schedule";
 import { COLORS, tip } from "@/lib/chart";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/estadisticas")({ component: Stats });
+export const Route = createFileRoute("/app/estadisticas")({ head: () => pageHead("Estadísticas", "Ocupación, tarifas y evolución de los socios del centro."), component: Stats });
 
 const AGE_GROUPS = [[0, 25, "<25"], [25, 35, "25-34"], [35, 45, "35-44"], [45, 55, "45-54"], [55, 65, "55-64"], [65, 200, "65+"]] as const;
 const ageGroup = (a: number | null) => (a == null ? "—" : AGE_GROUPS.find(([lo, hi]) => a >= lo && a < hi)?.[2] ?? "—");

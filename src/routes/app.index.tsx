@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Cake, Users, CalendarCheck, Euro, AlertTriangle, Check, X } from "lucide-react";
 import { useAppData, useMutate, currentMonth, fullName, fee, monthLabel } from "@/lib/store";
 import { DAY_NAMES, todayCode } from "@/lib/schedule";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/")({ component: Inicio });
+export const Route = createFileRoute("/app/")({ head: () => pageHead("Inicio", "Actividad diaria, socios, entrenos, cuotas y avisos del centro."), component: Inicio });
 
 function Stat({ icon: Icon, label, value, tone = "text-primary" }: { icon: any; label: string; value: string | number; tone?: string }) {
   return (

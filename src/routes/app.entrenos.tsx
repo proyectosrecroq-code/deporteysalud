@@ -2,8 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { WorkoutEditor } from "@/components/WorkoutEditor";
 import { useAppData, fullName } from "@/lib/store";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/entrenos")({ component: Entrenos });
+export const Route = createFileRoute("/app/entrenos")({ head: () => pageHead("Entrenos", "Programación y edición de entrenamientos y registro de cargas realizadas."), component: Entrenos });
 
 function Entrenos() {
   const { data } = useAppData();
