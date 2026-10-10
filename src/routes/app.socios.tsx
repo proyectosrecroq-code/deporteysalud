@@ -81,7 +81,7 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
   };
   const toggleCond = (n: string) => set("conditions", m.conditions?.includes(n) ? m.conditions.filter((c) => c !== n) : [...(m.conditions ?? []), n]);
   const markPay = (method: string | null) => {
-    if (!m.id) return;
+    if (!m.id) return undefined;
     mut.mutate({ table: "payments", action: "upsert", onConflict: "member_id,month",
       rows: [{ member_id: m.id, month, amount: fee(m as Member, settings), method, paid: !!method, paid_at: method ? new Date().toISOString() : null }] });
   };
@@ -164,7 +164,7 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
             </label>
             <div className="flex gap-2">
               {m.id && <ConfirmDelete title="Eliminar socio" description={`Se eliminará ${fullName(m as Member)} con sus pagos y entrenos.`}
-                onConfirm={() => mut.mutate({ table: "members", action: "delete", id: m.id }, { onSuccess: onClose })}
+                onConfirm={() => mut.mutate({ table: "members", action: "delete", id: m.id! }, { onSuccess: onClose })}
                 trigger={<button className="rounded-lg border border-destructive px-4 py-2 text-sm text-destructive">Eliminar</button>} />}
               <button onClick={save} className="ml-auto rounded-lg bg-primary px-6 py-2 font-semibold text-primary-foreground">Guardar</button>
             </div>

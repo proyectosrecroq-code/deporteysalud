@@ -21,7 +21,7 @@ function Inicio() {
   const month = currentMonth();
   const active = data.members.filter((m) => m.active);
   const today = todayCode();
-  const todayMembers = active.filter((m) => m.schedule?.[today]).sort((a, b) => a.schedule[today].localeCompare(b.schedule[today]));
+  const todayMembers = active.filter((m) => m.schedule?.[today]).sort((a, b) => (a.schedule[today] ?? "").localeCompare(b.schedule[today] ?? ""));
   const paidMonth = data.payments.filter((p) => p.month === month && p.paid).reduce((s, p) => s + Number(p.amount), 0);
   const paidIds = new Set(data.payments.filter((p) => p.month === month && p.paid).map((p) => p.member_id));
   const pendingNow = active.filter((m) => !paidIds.has(m.id));
@@ -72,7 +72,7 @@ function Inicio() {
           {requests.length === 0 && <p className="text-sm text-muted-foreground">Sin avisos pendientes.</p>}
           {requests.map((r) => (
             <div key={r.id} className="mb-2 rounded-lg bg-secondary p-2 text-sm">
-              <div className="flex justify-between"><b>{byId[r.member_id] ? fullName(byId[r.member_id]) : "?"}</b>
+              <div className="flex justify-between"><b>{byId[r.member_id] ? fullName(byId[r.member_id]!) : "?"}</b>
                 <span className={r.type === "cambio" ? "text-warning" : "text-destructive"}>{r.type === "cambio" ? "Cambio" : "Ausencia"}</span></div>
               <div className="text-muted-foreground">{DAY_NAMES[r.day ?? ""] ?? ""} {r.desired_time && `→ ${r.desired_time}`} · {r.message}</div>
               <div className="mt-1.5 flex gap-2">
@@ -85,7 +85,7 @@ function Inicio() {
         <div className="panel">
           <h2 className="mb-3 text-xl font-bold uppercase">Cuotas pendientes</h2>
           {pendingNow.map((m) => <div key={m.id} className="flex justify-between py-1 text-sm"><span>{fullName(m)}</span><span className="text-warning">{monthLabel(month)} · {fee(m, settings)} €</span></div>)}
-          {pendingOld.map((p) => <div key={p.id} className="flex justify-between py-1 text-sm"><span>{byId[p.member_id] ? fullName(byId[p.member_id]) : "?"}</span><span className="text-destructive">{monthLabel(p.month)} · {p.amount} €</span></div>)}
+          {pendingOld.map((p) => <div key={p.id} className="flex justify-between py-1 text-sm"><span>{byId[p.member_id] ? fullName(byId[p.member_id]!) : "?"}</span><span className="text-destructive">{monthLabel(p.month)} · {p.amount} €</span></div>)}
           {pendingNow.length + pendingOld.length === 0 && <p className="text-sm text-muted-foreground">Todo al día.</p>}
         </div>
         <div className="panel">
