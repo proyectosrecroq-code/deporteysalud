@@ -10,33 +10,145 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as SocioRouteImport } from './routes/socio'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppAgendaRouteImport } from './routes/app.agenda'
+import { Route as AppAjustesRouteImport } from './routes/app.ajustes'
+import { Route as AppEntrenosRouteImport } from './routes/app.entrenos'
+import { Route as AppEstadisticasRouteImport } from './routes/app.estadisticas'
+import { Route as AppFinanzasRouteImport } from './routes/app.finanzas'
+import { Route as AppSociosRouteImport } from './routes/app.socios'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SocioRoute = SocioRouteImport.update({
+  id: '/socio',
+  path: '/socio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAgendaRoute = AppAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAjustesRoute = AppAjustesRouteImport.update({
+  id: '/ajustes',
+  path: '/ajustes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEntrenosRoute = AppEntrenosRouteImport.update({
+  id: '/entrenos',
+  path: '/entrenos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEstadisticasRoute = AppEstadisticasRouteImport.update({
+  id: '/estadisticas',
+  path: '/estadisticas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFinanzasRoute = AppFinanzasRouteImport.update({
+  id: '/finanzas',
+  path: '/finanzas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSociosRoute = AppSociosRouteImport.update({
+  id: '/socios',
+  path: '/socios',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/socio': typeof SocioRoute
+  '/app/agenda': typeof AppAgendaRoute
+  '/app/ajustes': typeof AppAjustesRoute
+  '/app/entrenos': typeof AppEntrenosRoute
+  '/app/estadisticas': typeof AppEstadisticasRoute
+  '/app/finanzas': typeof AppFinanzasRoute
+  '/app/socios': typeof AppSociosRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/socio': typeof SocioRoute
+  '/app/agenda': typeof AppAgendaRoute
+  '/app/ajustes': typeof AppAjustesRoute
+  '/app/entrenos': typeof AppEntrenosRoute
+  '/app/estadisticas': typeof AppEstadisticasRoute
+  '/app/finanzas': typeof AppFinanzasRoute
+  '/app/socios': typeof AppSociosRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/socio': typeof SocioRoute
+  '/app/agenda': typeof AppAgendaRoute
+  '/app/ajustes': typeof AppAjustesRoute
+  '/app/entrenos': typeof AppEntrenosRoute
+  '/app/estadisticas': typeof AppEstadisticasRoute
+  '/app/finanzas': typeof AppFinanzasRoute
+  '/app/socios': typeof AppSociosRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/socio'
+    | '/app/agenda'
+    | '/app/ajustes'
+    | '/app/entrenos'
+    | '/app/estadisticas'
+    | '/app/finanzas'
+    | '/app/socios'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/socio'
+    | '/app/agenda'
+    | '/app/ajustes'
+    | '/app/entrenos'
+    | '/app/estadisticas'
+    | '/app/finanzas'
+    | '/app/socios'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/socio'
+    | '/app/agenda'
+    | '/app/ajustes'
+    | '/app/entrenos'
+    | '/app/estadisticas'
+    | '/app/finanzas'
+    | '/app/socios'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  SocioRoute: typeof SocioRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +160,98 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/socio': {
+      id: '/socio'
+      path: '/socio'
+      fullPath: '/socio'
+      preLoaderRoute: typeof SocioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/agenda': {
+      id: '/app/agenda'
+      path: '/agenda'
+      fullPath: '/app/agenda'
+      preLoaderRoute: typeof AppAgendaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/ajustes': {
+      id: '/app/ajustes'
+      path: '/ajustes'
+      fullPath: '/app/ajustes'
+      preLoaderRoute: typeof AppAjustesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/entrenos': {
+      id: '/app/entrenos'
+      path: '/entrenos'
+      fullPath: '/app/entrenos'
+      preLoaderRoute: typeof AppEntrenosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/estadisticas': {
+      id: '/app/estadisticas'
+      path: '/estadisticas'
+      fullPath: '/app/estadisticas'
+      preLoaderRoute: typeof AppEstadisticasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/finanzas': {
+      id: '/app/finanzas'
+      path: '/finanzas'
+      fullPath: '/app/finanzas'
+      preLoaderRoute: typeof AppFinanzasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/socios': {
+      id: '/app/socios'
+      path: '/socios'
+      fullPath: '/app/socios'
+      preLoaderRoute: typeof AppSociosRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppAgendaRoute: typeof AppAgendaRoute
+  AppAjustesRoute: typeof AppAjustesRoute
+  AppEntrenosRoute: typeof AppEntrenosRoute
+  AppEstadisticasRoute: typeof AppEstadisticasRoute
+  AppFinanzasRoute: typeof AppFinanzasRoute
+  AppSociosRoute: typeof AppSociosRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAgendaRoute: AppAgendaRoute,
+  AppAjustesRoute: AppAjustesRoute,
+  AppEntrenosRoute: AppEntrenosRoute,
+  AppEstadisticasRoute: AppEstadisticasRoute,
+  AppFinanzasRoute: AppFinanzasRoute,
+  AppSociosRoute: AppSociosRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  SocioRoute: SocioRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
