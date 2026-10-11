@@ -2,6 +2,7 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ownerLoad, ownerMutate } from "./api.functions";
+import { isAuthError } from "./auth-errors";
 
 export interface Member {
   id: string; first_name: string; last_name: string; phone: string; pin: string;
@@ -18,20 +19,60 @@ export interface Workout { id: string; member_id: string; date: string; type: st
 export interface Condition { id: string; name: string; kind: "lesion" | "patologia" | "condicion" | "objetivo" }
 export interface MemberRequest { id: string; member_id: string; type: string; day: string | null; desired_time: string | null; message: string; status: string; created_at: string }
 export interface Settings {
-  owner_password: string; capacity: number; overlap_max: number; tariffs: Record<string, number>;
+  capacity: number; overlap_max: number; tariffs: Record<string, number>;
   open_days: string[]; class_times: string[]; payment_methods: string[]; exercise_categories: string[];
 }
 export interface AppData {
   members: Member[]; payments: Payment[]; exercises: Exercise[]; workouts: Workout[];
   conditions: Condition[]; member_requests: MemberRequest[]; settings: { id: number; data: Settings }[];
 }
-export type TableName = keyof AppData;
+export type TableName = Exclude<keyof AppData, "settings">;
 
-export const getPw = () => (typeof window === "undefined" ? "" : sessionStorage.getItem("owner_pw") ?? "");
+// Session: a signed token issued by the server after login. The password itself is never stored.
+const TOKEN_KEY = "owner_token";
+const EXPIRES_KEY = "owner_expires";
+
+export function saveSession(session: { token: string; expiresAt: number }) {
+  sessionStorage.setItem(TOKEN_KEY, session.token);
+  sessionStorage.setItem(EXPIRES_KEY, String(session.expiresAt));
+}
+export function clearSession() {
+  try {
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(EXPIRES_KEY);
+    sessionStorage.removeItem("owner_ok");
+    sessionStorage.removeItem("owner_pw");
+  } catch {
+    /* storage unavailable */
+  }
+}
+export function getToken(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    const token = sessionStorage.getItem(TOKEN_KEY);
+    const expires = Number(sessionStorage.getItem(EXPIRES_KEY));
+    if (token && expires > Date.now()) return token;
+    clearSession();
+  } catch {
+    /* storage unavailable */
+  }
+  return "";
+}
+
+/** Session expired or revoked (for example after a password change): back to the login screen. */
+export function handleAuthError() {
+  clearSession();
+  toast.error("Tu sesión ha caducado. Inicia sesión de nuevo.");
+  setTimeout(() => window.location.assign("/"), 900);
+}
 
 export function useAppData() {
   const load = useServerFn(ownerLoad);
-  const q = useQuery({ queryKey: ["app"], queryFn: () => load({ data: { password: getPw() } }) as Promise<AppData> });
+  const q = useQuery({
+    queryKey: ["app"],
+    queryFn: () => load({ data: { token: getToken() } }) as unknown as Promise<AppData>,
+    retry: (count, error) => !isAuthError(error) && count < 2,
+  });
   const settings = q.data?.settings?.[0]?.data;
   return { ...q, settings };
 }
@@ -40,10 +81,19 @@ export function useMutate() {
   const fn = useServerFn(ownerMutate);
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (v: { table: TableName; action: "upsert" | "delete" | "deleteAll" | "insertMany"; rows?: any[]; id?: string; onConflict?: string }) =>
-      fn({ data: { password: getPw(), ...v } }),
+    mutationFn: (v: { table: TableName; action: "upsert" | "delete" | "deleteAll" | "insertMany"; rows?: object[]; id?: string; onConflict?: "member_id,month" }) =>
+      fn({
+        data: {
+          token: getToken(),
+          table: v.table,
+          action: v.action,
+          ...(v.rows ? { rows: v.rows as Record<string, unknown>[] } : {}),
+          ...(v.id ? { id: v.id } : {}),
+          ...(v.onConflict ? { onConflict: v.onConflict } : {}),
+        },
+      }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["app"] }),
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => (isAuthError(e) ? handleAuthError() : toast.error(e.message)),
   });
 }
 

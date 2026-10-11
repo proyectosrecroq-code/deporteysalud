@@ -14,6 +14,13 @@ export const fromMin = (m: number) =>
   `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
 export const isOnHour = (t: string) => toMin(t) % 60 === 0;
 
+/** Times a member can be assigned to: the class times plus their on-the-hour (overlapping) variants. */
+export function allowedTimes(classTimes: string[]): string[] {
+  const set = new Set(classTimes);
+  for (const t of classTimes) set.add(t.replace(":30", ":00"));
+  return [...set].sort();
+}
+
 export function todayCode(d = new Date()) {
   return ["D", "L", "M", "X", "J", "V", "S"][d.getDay()]!;
 }
@@ -56,6 +63,19 @@ export function validateAssignment(
 
 const ORDER = ["L", "M", "X", "J", "V", "S", "D"];
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+/** Local calendar date (YYYY-MM-DD). Never use toISOString() for this: it is UTC and flips the day after midnight in Spain. */
+export const todayISO = (d = new Date()) => iso(d);
+
+/** Calendar date in the centre's time zone, for server code where the runtime clock is UTC. */
+export const madridISO = (d = new Date()) =>
+  new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Madrid" }).format(d);
+
+/** A Date at local midnight for the centre's current calendar day (only y/m/d are meaningful). */
+export function madridToday(d = new Date()): Date {
+  const [y = 2000, m = 1, day = 1] = madridISO(d).split("-").map(Number);
+  return new Date(y, m - 1, day);
+}
 
 /** Monday of the week containing d, shifted by `offset` weeks. */
 export function weekStart(d = new Date(), offset = 0) {

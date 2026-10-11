@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, LineChart, Line } from "recharts";
-import type { ReactNode } from "react";
+import type { ReactElement } from "react";
 import { useAppData, currentMonth, lastMonths, monthLabel, age, fee, KIND_LABEL } from "@/lib/store";
 import { DAY_NAMES } from "@/lib/schedule";
 import { COLORS, tip } from "@/lib/chart";
@@ -72,8 +72,8 @@ const G = () => <><CartesianGrid stroke="var(--border)" vertical={false} /><XAxi
 function K({ l, v, sub, tone = "text-primary" }: { l: string; v: string | number; sub?: string; tone?: string }) {
   return <div className="panel"><div className="text-xs uppercase tracking-wider text-muted-foreground">{l}</div><div className={`mt-2 font-display text-4xl font-black ${tone}`}>{v}</div>{sub && <div className="text-xs text-muted-foreground">{sub}</div>}</div>;
 }
-function C({ t, children }: { t: string; children: ReactNode }) {
-  return <div className="panel"><h2 className="mb-2 text-lg font-bold uppercase">{t}</h2><div className="h-60"><ResponsiveContainer>{children as any}</ResponsiveContainer></div></div>;
+function C({ t, children }: { t: string; children: ReactElement }) {
+  return <div className="panel"><h2 className="mb-2 text-lg font-bold uppercase">{t}</h2><div className="h-60"><ResponsiveContainer>{children}</ResponsiveContainer></div></div>;
 }
 function Matrix({ t, cols, cell }: { t: string; cols: string[]; cell: (g: string, c: string) => number }) {
   return (

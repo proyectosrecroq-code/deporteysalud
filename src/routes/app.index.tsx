@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Cake, Users, CalendarCheck, Euro, AlertTriangle, Check, X } from "lucide-react";
+import { Cake, Users, CalendarCheck, Euro, AlertTriangle, Check, X, type LucideIcon } from "lucide-react";
 import { useAppData, useMutate, currentMonth, fullName, fee, monthLabel } from "@/lib/store";
-import { DAY_NAMES, todayCode } from "@/lib/schedule";
+import { DAY_NAMES, todayCode, todayISO } from "@/lib/schedule";
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/")({ head: () => pageHead("Inicio", "Actividad diaria, socios, entrenos, cuotas y avisos del centro."), component: Inicio });
 
-function Stat({ icon: Icon, label, value, tone = "text-primary" }: { icon: any; label: string; value: string | number; tone?: string }) {
+function Stat({ icon: Icon, label, value, tone = "text-primary" }: { icon: LucideIcon; label: string; value: string | number; tone?: string }) {
   return (
     <div className="panel">
       <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground"><Icon className="h-4 w-4" />{label}</div>
@@ -27,7 +27,7 @@ function Inicio() {
   const paidIds = new Set(data.payments.filter((p) => p.month === month && p.paid).map((p) => p.member_id));
   const pendingNow = active.filter((m) => !paidIds.has(m.id));
   const pendingOld = data.payments.filter((p) => p.month < month && !p.paid);
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = todayISO();
   const todayWorkouts = data.workouts.filter((w) => w.date === todayStr);
   const requests = data.member_requests.filter((r) => r.status === "pendiente");
   const byId = Object.fromEntries(data.members.map((m) => [m.id, m]));

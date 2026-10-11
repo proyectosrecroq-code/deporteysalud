@@ -25,14 +25,22 @@ export default defineConfig({
         // Manifest already lives in public/manifest.webmanifest.
         manifest: false,
         workbox: {
-          navigateFallback: "/index.html",
-          navigateFallbackDenylist: [/^\/~oauth/, /^\/api\//],
+          // The app is server-rendered, so there is no static /index.html to fall back to and nothing to
+          // precache. Offline support is limited to the app shell of pages already visited; owner data
+          // (health information) is deliberately never stored on the device.
+          cleanupOutdatedCaches: true,
           runtimeCaching: [
             {
-              // HTML navigations: network first, never cache-first.
+              // HTML navigations: network first (fall back to the cached shell after 4 s without answer).
               urlPattern: ({ request }: { request: Request }) => request.mode === "navigate",
               handler: "NetworkFirst",
-              options: { cacheName: "html-navigations" },
+              options: { cacheName: "html-navigations", networkTimeoutSeconds: 4 },
+            },
+            {
+              // Self-hosted fonts never change under the same URL.
+              urlPattern: ({ url }: { url: URL }) => url.origin === self.location.origin && url.pathname.startsWith("/fonts/"),
+              handler: "CacheFirst",
+              options: { cacheName: "fonts", expiration: { maxEntries: 12 } },
             },
             {
               // Same-origin hashed build assets only.

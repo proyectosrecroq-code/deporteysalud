@@ -20,6 +20,8 @@ export function Intro({ onDone }: { onDone: () => void }) {
   const fadeStarted = useRef<number | null>(null);
   const logoStarted = useRef<number | null>(null);
   const soundAttempted = useRef(false);
+  const mutedRef = useRef(true);
+  mutedRef.current = muted;
   const readyScene = useCallback(() => setReady(true), []);
   useEffect(() => {
     const player = video.current;
@@ -34,7 +36,7 @@ export function Intro({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     if (phase !== 'logo') return;
     logoStarted.current = performance.now();
-    if (audio.current && !muted) {
+    if (audio.current && !mutedRef.current) {
       audio.current.currentTime = 6;
       void audio.current.play().catch(() => {});
     }

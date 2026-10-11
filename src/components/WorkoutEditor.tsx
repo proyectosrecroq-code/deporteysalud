@@ -3,12 +3,13 @@ import { Plus, Trash2, Wand2, Pencil, Save, X } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useAppData, useMutate, type Workout, type WorkoutBlock, type WorkoutItem } from '@/lib/store';
 import { generateWorkout, type WorkoutType } from '@/lib/workout-gen';
+import { todayISO } from '@/lib/schedule';
 import { editableBlocks, previousLoad, canRecordLoad } from '@/lib/workout-loads';
 import { Button } from '@/components/ui/button';
 import { ConfirmDelete } from '@/components/ConfirmDelete';
 import { toast } from 'sonner';
 
-const todayDate = () => new Date().toLocaleDateString('sv-SE');
+const todayDate = () => todayISO();
 type Draft = { id?: string; title: string; blocks: WorkoutBlock[]; date: string; type: WorkoutType };
 const dateLabel = (date: string) => new Date(`${date}T12:00:00`).toLocaleDateString('es-ES');
 

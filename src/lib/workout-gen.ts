@@ -1,6 +1,14 @@
 import type { Exercise, WorkoutBlock } from "./store";
 
-const pick = <T,>(arr: T[], n: number) => [...arr].sort(() => Math.random() - 0.5).slice(0, n);
+/** Fisher-Yates: an unbiased shuffle (sorting with a random comparator is not). */
+function pick<T>(arr: T[], n: number): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j]!, a[i]!];
+  }
+  return a.slice(0, n);
+}
 const byCat = (ex: Exercise[], ...cats: string[]) => ex.filter((e) => cats.includes(e.category));
 
 export type WorkoutType = "Completo" | "WOD" | "Hyrox" | "Sueltos";

@@ -33,3 +33,12 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Seguridad y primer despliegue
+
+- **Primer acceso**: si todavía no hay contraseña, la pantalla de entrada pide crearla (mínimo 10 caracteres). Hazlo nada más publicar: hasta entonces cualquiera que abra la web podría crearla. La contraseña se guarda solo como hash (PBKDF2) y no se puede recuperar desde la app.
+- **Contraseña antigua**: si ya tenías una, sigue valiendo; en el primer acceso se convierte en hash y se borra el texto en claro.
+- **Intentos**: 5 intentos fallidos bloquean 15 minutos (propietario por IP; socios por teléfono y por IP).
+- **Script de base de datos**: ejecuta una vez `supabase/manual/001_post-review.sql` desde el editor SQL de Lovable Cloud (añade columnas que faltaban, cierra permisos a `anon`/`authenticated` y trae, comentado, el borrado de los socios de demostración).
+- **Datos de salud**: las copias de seguridad y los Excel contienen datos de salud y PIN; guárdalos cifrados y bórralos cuando no hagan falta.
+

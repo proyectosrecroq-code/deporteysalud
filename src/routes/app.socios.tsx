@@ -6,18 +6,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ConfirmDelete } from "@/components/ConfirmDelete";
 import { WorkoutEditor } from "@/components/WorkoutEditor";
 import { useAppData, useMutate, currentMonth, fullName, fee, age, KIND_LABEL, type Member } from "@/lib/store";
-import { validateAssignment, DAY_NAMES } from "@/lib/schedule";
+import { validateAssignment, allowedTimes, todayISO, DAY_NAMES } from "@/lib/schedule";
+import { randomPin } from "@/lib/pin";
+import { isWeakPin } from "@/lib/validation";
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/app/socios")({ head: () => pageHead("Socios", "Fichas de socios, horarios asignados y entrenamientos personales."), component: Socios });
 
 const empty = (): Partial<Member> => ({
-  first_name: "", last_name: "", phone: "", pin: String(Math.floor(1000 + Math.random() * 9000)), birth_date: null,
-  join_date: new Date().toISOString().slice(0, 10), active: true, plan_days: 2, schedule: {}, conditions: [], notes: "", consent: false, consent_date: null,
+  first_name: "", last_name: "", phone: "", pin: randomPin(), birth_date: null,
+  join_date: todayISO(), active: true, plan_days: 2, schedule: {}, conditions: [], notes: "", consent: false, consent_date: null,
 });
 
 function Socios() {
-  const { data, settings } = useAppData();
+  const { data } = useAppData();
   const [q, setQ] = useState("");
   const [edit, setEdit] = useState<Partial<Member> | null>(null);
   if (!data) return null;
@@ -67,18 +69,20 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
   if (!data || !settings) return null;
   const month = currentMonth();
   const pay = m.id ? data.payments.find((p) => p.member_id === m.id && p.month === month) : undefined;
-  const set = (k: keyof Member, v: any) => setM({ ...m, [k]: v });
+  const set = <K extends keyof Member>(k: K, v: Member[K]) => setM({ ...m, [k]: v });
   const days = settings.open_days;
-  const times = [...settings.class_times, ...settings.class_times.map((t) => t.replace(":30", ":00")).filter((t) => !settings.class_times.includes(t))].sort();
+  const times = allowedTimes(settings.class_times);
 
   const save = () => {
     if (!m.first_name?.trim() || !m.phone?.trim()) { toast.error("Nombre y teléfono son obligatorios"); return; }
+    if (!/^\d{4,8}$/.test(m.pin ?? "")) { toast.error("El PIN debe tener entre 4 y 8 dígitos"); return; }
+    if (isWeakPin(m.pin ?? "")) { toast.error("PIN demasiado fácil de adivinar: evita 0000, 1234, repetidos o secuencias"); return; }
     if (Object.keys(m.schedule ?? {}).length !== m.plan_days) toast.warning(`La tarifa es de ${m.plan_days} días y tiene ${Object.keys(m.schedule ?? {}).length} asignados`);
     for (const [d, t] of Object.entries(m.schedule ?? {})) {
       const err = validateAssignment(data.members, m.id ?? null, d, t, settings.capacity, settings.overlap_max);
       if (err && m.active) { toast.error(err); return; }
     }
-    const row = { ...m, consent_date: m.consent ? m.consent_date ?? new Date().toISOString().slice(0, 10) : null };
+    const row = { ...m, consent_date: m.consent ? m.consent_date ?? todayISO() : null };
     mut.mutate({ table: "members", action: "upsert", rows: [row] }, { onSuccess: () => { toast.success("Socio guardado"); onClose(); } });
   };
   const toggleCond = (n: string) => set("conditions", m.conditions?.includes(n) ? m.conditions.filter((c) => c !== n) : [...(m.conditions ?? []), n]);
@@ -112,7 +116,7 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="panel">
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">Sesiones realizadas</div>
-                  <div className="font-display text-4xl font-black text-primary">{data.workouts.filter((w) => w.member_id === m.id && w.date <= new Date().toLocaleDateString("sv-SE")).length}</div>
+                  <div className="font-display text-4xl font-black text-primary">{data.workouts.filter((w) => w.member_id === m.id && w.date <= todayISO()).length}</div>
                 </div>
                 <div className="panel space-y-2">
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">Pendientes de recuperar</div>
@@ -129,7 +133,7 @@ function MemberDialog({ member, onClose }: { member: Partial<Member>; onClose: (
               <L label="Nombre"><input className="field" value={m.first_name} onChange={(e) => set("first_name", e.target.value)} /></L>
               <L label="Apellidos"><input className="field" value={m.last_name} onChange={(e) => set("last_name", e.target.value)} /></L>
               <L label="Teléfono"><input className="field" value={m.phone} onChange={(e) => set("phone", e.target.value)} /></L>
-              <L label="PIN acceso socio"><input className="field" value={m.pin} onChange={(e) => set("pin", e.target.value)} /></L>
+              <L label="PIN acceso socio (4-8 dígitos)"><div className="flex gap-2"><input className="field" inputMode="numeric" maxLength={8} value={m.pin} onChange={(e) => set("pin", e.target.value.replace(/\D/g, ""))} /><button type="button" onClick={() => set("pin", randomPin())} className="shrink-0 rounded-lg border px-2 text-xs">Generar</button></div></L>
               <L label={`Fecha de nacimiento${age(m.birth_date ?? null) != null ? ` (${age(m.birth_date ?? null)} años)` : ""}`}><input type="date" className="field" value={m.birth_date ?? ""} onChange={(e) => set("birth_date", e.target.value || null)} /></L>
               <L label="Fecha de alta"><input type="date" className="field" value={m.join_date} onChange={(e) => set("join_date", e.target.value)} /></L>
               <L label="Estado">
