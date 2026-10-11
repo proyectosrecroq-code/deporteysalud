@@ -14,9 +14,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Deporte y Salud — Acceso" },
-      { name: "description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo Deporte y Salud." },
+      {
+        name: "description",
+        content:
+          "Gestión de socios, agenda, entrenos y finanzas del centro deportivo Deporte y Salud.",
+      },
       { property: "og:title", content: "Deporte y Salud — Acceso" },
-      { property: "og:description", content: "Gestión de socios, agenda, entrenos y finanzas del centro deportivo Deporte y Salud." },
+      {
+        property: "og:description",
+        content:
+          "Gestión de socios, agenda, entrenos y finanzas del centro deportivo Deporte y Salud.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -45,15 +53,26 @@ function Index() {
 
   const enter = async () => {
     if (configured === false) {
-      if (pw.length < PASSWORD_MIN) return void toast.error(`La contraseña debe tener al menos ${PASSWORD_MIN} caracteres`);
+      if (pw.length < PASSWORD_MIN)
+        return void toast.error(`La contraseña debe tener al menos ${PASSWORD_MIN} caracteres`);
       if (pw !== pw2) return void toast.error("Las contraseñas no coinciden");
     }
     setLoading(true);
     try {
-      const session = configured === false ? await setup({ data: { password: pw } }) : await login({ data: { password: pw } });
+      const session =
+        configured === false
+          ? await setup({ data: { password: pw } })
+          : await login({ data: { password: pw } });
       saveSession(session);
-      if ("weak" in session && session.weak) toast.warning(`Tu contraseña tiene menos de ${PASSWORD_MIN} caracteres: cámbiala en Ajustes.`, { duration: 10000 });
-      if (configured === false) toast.success("Contraseña creada. Guárdala: no se puede recuperar desde la app.", { duration: 10000 });
+      if ("weak" in session && session.weak)
+        toast.warning(
+          `Tu contraseña tiene menos de ${PASSWORD_MIN} caracteres: cámbiala en Ajustes.`,
+          { duration: 10000 },
+        );
+      if (configured === false)
+        toast.success("Contraseña creada. Guárdala: no se puede recuperar desde la app.", {
+          duration: 10000,
+        });
       nav({ to: "/app" });
     } catch (e) {
       toast.error((e as Error).message);
@@ -74,7 +93,9 @@ function Index() {
             <RotateCcw />
             Ver presentación
           </Button>
-          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">Centro deportivo</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Centro deportivo
+          </p>
           <form
             className="space-y-3"
             onSubmit={(e) => {
@@ -84,7 +105,8 @@ function Index() {
           >
             {configured === false && (
               <p className="rounded-lg border border-primary/40 p-3 text-left text-sm text-muted-foreground">
-                Primer acceso: crea la contraseña del propietario (mínimo {PASSWORD_MIN} caracteres). Es la única forma de entrar al panel.
+                Primer acceso: crea la contraseña del propietario (mínimo {PASSWORD_MIN}{" "}
+                caracteres). Es la única forma de entrar al panel.
               </p>
             )}
             <input
@@ -115,7 +137,10 @@ function Index() {
               {configured === false ? "Crear y entrar" : "Entrar"}
             </button>
           </form>
-          <button onClick={() => nav({ to: "/socio" })} className="w-full rounded-lg border border-primary/40 py-3 text-sm hover:bg-accent">
+          <button
+            onClick={() => nav({ to: "/socio" })}
+            className="w-full rounded-lg border border-primary/40 py-3 text-sm hover:bg-accent"
+          >
             ¿Eres socio? <span className="font-semibold text-primary">Entra aquí</span>
           </button>
         </div>

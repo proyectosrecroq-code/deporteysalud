@@ -54,8 +54,13 @@ function withSecurityHeaders(request: Request, response: Response): Response {
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
   headers.set("Strict-Transport-Security", "max-age=31536000");
   // Server-function answers carry member and health data: never let a proxy or the browser keep them.
-  if (new URL(request.url).pathname.startsWith("/_serverFn")) headers.set("Cache-Control", "no-store");
-  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+  if (new URL(request.url).pathname.startsWith("/_serverFn"))
+    headers.set("Cache-Control", "no-store");
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 export default {

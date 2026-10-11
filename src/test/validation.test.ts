@@ -1,10 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { isWeakPin, loginPin, memberSchema, newPin, normalizePhone, parseOrThrow, phoneStr, workoutSchema } from "@/lib/validation";
+import {
+  isWeakPin,
+  loginPin,
+  memberSchema,
+  newPin,
+  normalizePhone,
+  parseOrThrow,
+  phoneStr,
+  workoutSchema,
+} from "@/lib/validation";
 import { allowedTimes, madridISO, madridToday, todayISO } from "@/lib/schedule";
 
 const member = {
-  first_name: "Ana", last_name: "García", phone: "600 111 001", pin: "482913", join_date: "2026-01-10", active: true, plan_days: 3,
-  schedule: { L: "09:30" }, conditions: [], notes: "", consent: false,
+  first_name: "Ana",
+  last_name: "García",
+  phone: "600 111 001",
+  pin: "482913",
+  join_date: "2026-01-10",
+  active: true,
+  plan_days: 3,
+  schedule: { L: "09:30" },
+  conditions: [],
+  notes: "",
+  consent: false,
 };
 
 describe("validación de entrada", () => {
@@ -17,7 +35,8 @@ describe("validación de entrada", () => {
   it("PIN: el login acepta los antiguos de 4 dígitos, pero no se pueden crear débiles", () => {
     expect(loginPin.safeParse("1234").success).toBe(true);
     expect(newPin.safeParse("1234").success).toBe(false);
-    for (const weak of ["0000", "1111", "123456", "654321", "2580"]) expect(isWeakPin(weak)).toBe(true);
+    for (const weak of ["0000", "1111", "123456", "654321", "2580"])
+      expect(isWeakPin(weak)).toBe(true);
     expect(isWeakPin("482913")).toBe(false);
     expect(loginPin.safeParse("12ab").success).toBe(false);
   });
@@ -25,13 +44,25 @@ describe("validación de entrada", () => {
     const parsed = memberSchema.parse({ ...member, is_admin: true, id: undefined });
     expect(parsed).not.toHaveProperty("is_admin");
     expect(parsed.phone).toBe("600111001");
-    expect(() => parseOrThrow(memberSchema, { ...member, plan_days: 0 })).toThrow(/no válidos \(plan_days\)/);
-    expect(() => parseOrThrow(memberSchema, { ...member, schedule: { L: "9h" } })).toThrow(/Hora no válida/);
+    expect(() => parseOrThrow(memberSchema, { ...member, plan_days: 0 })).toThrow(
+      /no válidos \(plan_days\)/,
+    );
+    expect(() => parseOrThrow(memberSchema, { ...member, schedule: { L: "9h" } })).toThrow(
+      /Hora no válida/,
+    );
     expect(() => parseOrThrow(memberSchema, { ...member, schedule: { Z: "09:30" } })).toThrow();
-    expect(() => parseOrThrow(memberSchema, { ...member, birth_date: "2000-02-31" })).toThrow(/Fecha no válida/);
+    expect(() => parseOrThrow(memberSchema, { ...member, birth_date: "2000-02-31" })).toThrow(
+      /Fecha no válida/,
+    );
   });
   it("los pesos registrados solo admiten números", () => {
-    const w = { member_id: "11111111-1111-4111-8111-111111111111", date: "2026-10-10", type: "Completo", title: "x", blocks: [{ block: "Fuerza", items: [{ name: "Sentadilla", recordedLoad: "35,5" }] }] };
+    const w = {
+      member_id: "11111111-1111-4111-8111-111111111111",
+      date: "2026-10-10",
+      type: "Completo",
+      title: "x",
+      blocks: [{ block: "Fuerza", items: [{ name: "Sentadilla", recordedLoad: "35,5" }] }],
+    };
     expect(workoutSchema.safeParse(w).success).toBe(true);
     w.blocks[0]!.items[0]!.recordedLoad = "<script>";
     expect(workoutSchema.safeParse(w).success).toBe(false);

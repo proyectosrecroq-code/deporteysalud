@@ -26,15 +26,29 @@ export function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
   return diff === 0;
 }
 
-export const safeEqualText = (a: string, b: string) => constantTimeEqual(enc.encode(a), enc.encode(b));
+export const safeEqualText = (a: string, b: string) =>
+  constantTimeEqual(enc.encode(a), enc.encode(b));
 
-async function pbkdf2(password: string, salt: Uint8Array<ArrayBuffer>, iterations: number): Promise<Uint8Array> {
-  const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt, iterations }, key, 256);
+async function pbkdf2(
+  password: string,
+  salt: Uint8Array<ArrayBuffer>,
+  iterations: number,
+): Promise<Uint8Array> {
+  const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
+    "deriveBits",
+  ]);
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt, iterations },
+    key,
+    256,
+  );
   return new Uint8Array(bits);
 }
 
-export async function hashPassword(password: string, iterations = PBKDF2_ITERATIONS): Promise<string> {
+export async function hashPassword(
+  password: string,
+  iterations = PBKDF2_ITERATIONS,
+): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const hash = await pbkdf2(password, salt, iterations);
   return `pbkdf2-sha256$${iterations}$${toB64u(salt)}$${toB64u(hash)}`;
@@ -43,7 +57,8 @@ export async function hashPassword(password: string, iterations = PBKDF2_ITERATI
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const [scheme, iterations, salt, hash] = stored.split("$");
   const rounds = Number(iterations);
-  if (scheme !== "pbkdf2-sha256" || !Number.isInteger(rounds) || rounds < 1 || !salt || !hash) return false;
+  if (scheme !== "pbkdf2-sha256" || !Number.isInteger(rounds) || rounds < 1 || !salt || !hash)
+    return false;
   try {
     const candidate = await pbkdf2(password, fromB64u(salt), rounds);
     return constantTimeEqual(candidate, fromB64u(hash));
@@ -53,7 +68,13 @@ export async function verifyPassword(password: string, stored: string): Promise<
 }
 
 async function hmac(secret: string, message: string): Promise<Uint8Array> {
-  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const key = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
   return new Uint8Array(await crypto.subtle.sign("HMAC", key, enc.encode(message)));
 }
 
@@ -75,14 +96,19 @@ export async function signSession(claims: SessionClaims, secret: string): Promis
   return `${body}.${toB64u(await hmac(secret, `${SESSION_CONTEXT}.${body}`))}`;
 }
 
-export async function verifySession(token: string, secret: string, now = Date.now()): Promise<SessionClaims | null> {
+export async function verifySession(
+  token: string,
+  secret: string,
+  now = Date.now(),
+): Promise<SessionClaims | null> {
   const [body, sig, extra] = token.split(".");
   if (!body || !sig || extra !== undefined) return null;
   try {
     const expected = await hmac(secret, `${SESSION_CONTEXT}.${body}`);
     if (!constantTimeEqual(expected, fromB64u(sig))) return null;
     const claims = JSON.parse(dec.decode(fromB64u(body))) as Partial<SessionClaims>;
-    if (typeof claims.exp !== "number" || typeof claims.ph !== "string" || claims.exp <= now) return null;
+    if (typeof claims.exp !== "number" || typeof claims.ph !== "string" || claims.exp <= now)
+      return null;
     return { exp: claims.exp, ph: claims.ph };
   } catch {
     return null;
@@ -157,14 +183,18 @@ interface Outcome {
 
 async function mutate(
   store: AttemptStore,
-  fn: (entries: Record<string, LimitEntry>, now: number) => { entries: Record<string, LimitEntry> | null; outcome: Outcome },
+  fn: (
+    entries: Record<string, LimitEntry>,
+    now: number,
+  ) => { entries: Record<string, LimitEntry> | null; outcome: Outcome },
 ): Promise<Outcome> {
   for (let i = 0; i < MAX_RETRIES; i++) {
     const state = await store.load();
     const now = Date.now();
     const { entries, outcome } = fn({ ...state.entries }, now);
     if (!entries) return outcome;
-    if (await store.swap(state.rev, { rev: state.rev + 1, entries: prune(entries, now) })) return outcome;
+    if (await store.swap(state.rev, { rev: state.rev + 1, entries: prune(entries, now) }))
+      return outcome;
   }
   // Heavy contention means somebody is hammering the endpoint: fail closed.
   throw new RateLimitError(10_000);
@@ -174,7 +204,8 @@ async function mutate(
 export async function consumeAttempt(store: AttemptStore, key: string, rule: Rule): Promise<void> {
   const outcome = await mutate(store, (entries, now) => {
     const e = live(entries[key], now);
-    if (e?.locked) return { entries: null, outcome: { blocked: true, retryAfterMs: e.reset - now } };
+    if (e?.locked)
+      return { entries: null, outcome: { blocked: true, retryAfterMs: e.reset - now } };
     const n = (e?.n ?? 0) + 1;
     if (n > rule.max) {
       entries[key] = { n, reset: now + rule.lockMs, locked: true };
@@ -198,10 +229,13 @@ export async function recordFailure(store: AttemptStore, key: string, rule: Rule
   try {
     await mutate(store, (entries, now) => {
       const e = live(entries[key], now);
-      if (e?.locked) return { entries: null, outcome: { blocked: true, retryAfterMs: e.reset - now } };
+      if (e?.locked)
+        return { entries: null, outcome: { blocked: true, retryAfterMs: e.reset - now } };
       const n = (e?.n ?? 0) + 1;
       entries[key] =
-        n >= rule.max ? { n, reset: now + rule.lockMs, locked: true } : { n, reset: e?.reset ?? now + rule.windowMs };
+        n >= rule.max
+          ? { n, reset: now + rule.lockMs, locked: true }
+          : { n, reset: e?.reset ?? now + rule.windowMs };
       return { entries, outcome: { blocked: false, retryAfterMs: 0 } };
     });
   } catch (e) {

@@ -76,7 +76,9 @@ describe("límite de intentos", () => {
   });
   it("una ráfaga de intentos en paralelo no puede superar el máximo", async () => {
     const store = memoryStore();
-    const results = await Promise.allSettled(Array.from({ length: 40 }, () => consumeAttempt(store, "k", rule)));
+    const results = await Promise.allSettled(
+      Array.from({ length: 40 }, () => consumeAttempt(store, "k", rule)),
+    );
     expect(results.filter((r) => r.status === "fulfilled")).toHaveLength(3);
   });
   it("el acierto reinicia el contador", async () => {

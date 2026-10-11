@@ -4,7 +4,14 @@ import { z } from "zod";
 
 export const DAY_CODES = ["L", "M", "X", "J", "V", "S", "D"] as const;
 export const WEEKDAY_CODES = ["L", "M", "X", "J", "V"] as const;
-export const OWNER_TABLES = ["members", "payments", "exercises", "workouts", "conditions", "member_requests"] as const;
+export const OWNER_TABLES = [
+  "members",
+  "payments",
+  "exercises",
+  "workouts",
+  "conditions",
+  "member_requests",
+] as const;
 export type OwnerTable = (typeof OWNER_TABLES)[number];
 
 export const PASSWORD_MIN = 10;
@@ -35,9 +42,15 @@ export const phoneStr = z
   .transform(normalizePhone)
   .pipe(z.string().regex(/^\+?\d{6,15}$/, "Teléfono no válido (6-15 dígitos)"));
 /** PIN accepted at login: legacy 4-digit PINs keep working. */
-export const loginPin = z.string().trim().regex(/^\d{4,8}$/, "PIN no válido");
+export const loginPin = z
+  .string()
+  .trim()
+  .regex(/^\d{4,8}$/, "PIN no válido");
 /** PIN accepted when the owner writes one: no trivial PINs. */
-export const newPin = loginPin.refine((p) => !isWeakPin(p), "PIN demasiado fácil de adivinar (evita 0000, 1234, repetidos o secuencias)");
+export const newPin = loginPin.refine(
+  (p) => !isWeakPin(p),
+  "PIN demasiado fácil de adivinar (evita 0000, 1234, repetidos o secuencias)",
+);
 export const passwordStr = z
   .string()
   .min(PASSWORD_MIN, `La contraseña debe tener al menos ${PASSWORD_MIN} caracteres`)
@@ -136,7 +149,11 @@ export const OWNER_SCHEMAS = {
 } as const;
 
 /** Parse or throw an Error whose message is readable in a toast (Spanish, first issue only). */
-export function parseOrThrow<S extends z.ZodType>(schema: S, value: unknown, label = "Datos"): z.output<S> {
+export function parseOrThrow<S extends z.ZodType>(
+  schema: S,
+  value: unknown,
+  label = "Datos",
+): z.output<S> {
   const result = schema.safeParse(value);
   if (result.success) return result.data;
   const issue = result.error.issues[0];

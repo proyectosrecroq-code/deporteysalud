@@ -4,7 +4,14 @@ import { WorkoutEditor } from "@/components/WorkoutEditor";
 import { useAppData, fullName } from "@/lib/store";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/app/entrenos")({ head: () => pageHead("Entrenos", "Programación y edición de entrenamientos y registro de cargas realizadas."), component: Entrenos });
+export const Route = createFileRoute("/app/entrenos")({
+  head: () =>
+    pageHead(
+      "Entrenos",
+      "Programación y edición de entrenamientos y registro de cargas realizadas.",
+    ),
+  component: Entrenos,
+});
 
 function Entrenos() {
   const { data } = useAppData();
@@ -17,13 +24,32 @@ function Entrenos() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-3xl font-black uppercase">Entrenos</h1>
-        <select className="field ml-auto w-full sm:w-72" value={sel} onChange={(e) => setId(e.target.value)}>
-          {members.map((x) => <option key={x.id} value={x.id}>{fullName(x)}</option>)}
+        <select
+          className="field ml-auto w-full sm:w-72"
+          value={sel}
+          onChange={(e) => setId(e.target.value)}
+        >
+          {members.map((x) => (
+            <option key={x.id} value={x.id}>
+              {fullName(x)}
+            </option>
+          ))}
         </select>
       </div>
       {m && (
         <>
-          {m.conditions.length > 0 && <div className="flex flex-wrap gap-1">{m.conditions.map((c) => <span key={c} className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground">{c}</span>)}</div>}
+          {m.conditions.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {m.conditions.map((c) => (
+                <span
+                  key={c}
+                  className="rounded-full bg-accent px-2 py-0.5 text-xs text-accent-foreground"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+          )}
           <WorkoutEditor key={m.id} memberId={m.id} />
         </>
       )}

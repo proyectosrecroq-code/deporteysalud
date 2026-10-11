@@ -40,7 +40,10 @@ const REQUEST_IP: Rule = { max: 60, windowMs: 60 * 60_000, lockMs: 60 * 60_000 }
 
 export function clientIp(): string {
   const headers = getRequest()?.headers;
-  const raw = headers?.get("cf-connecting-ip") ?? headers?.get("x-real-ip") ?? headers?.get("x-forwarded-for")?.split(",")[0];
+  const raw =
+    headers?.get("cf-connecting-ip") ??
+    headers?.get("x-real-ip") ??
+    headers?.get("x-forwarded-for")?.split(",")[0];
   return (raw ?? "unknown").trim().slice(0, 64) || "unknown";
 }
 
@@ -48,12 +51,19 @@ function supabaseStore(db: AdminDb): AttemptStore {
   const empty = (): LimiterState => ({ rev: 0, entries: {} });
   return {
     async load() {
-      const { data, error } = await db.from("settings").select("data").eq("id", LIMITER_ID).maybeSingle();
+      const { data, error } = await db
+        .from("settings")
+        .select("data")
+        .eq("id", LIMITER_ID)
+        .maybeSingle();
       if (error) throw new Error(error.message);
       if (!data) {
         const created = await db
           .from("settings")
-          .upsert({ id: LIMITER_ID, data: empty() as unknown as Json }, { onConflict: "id", ignoreDuplicates: true });
+          .upsert(
+            { id: LIMITER_ID, data: empty() as unknown as Json },
+            { onConflict: "id", ignoreDuplicates: true },
+          );
         if (created.error) throw new Error(created.error.message);
         return empty();
       }
@@ -85,11 +95,21 @@ interface OwnerSecrets {
 }
 
 async function readSecrets(db: AdminDb): Promise<OwnerSecrets> {
-  const { data, error } = await db.from("settings").select("data").eq("id", SETTINGS_ID).maybeSingle();
+  const { data, error } = await db
+    .from("settings")
+    .select("data")
+    .eq("id", SETTINGS_ID)
+    .maybeSingle();
   if (error) throw new Error(error.message);
   const stored = (data?.data ?? {}) as Record<string, unknown>;
-  const hash = typeof stored["owner_password_hash"] === "string" && stored["owner_password_hash"] ? stored["owner_password_hash"] : undefined;
-  const legacy = typeof stored["owner_password"] === "string" && stored["owner_password"] ? stored["owner_password"] : undefined;
+  const hash =
+    typeof stored["owner_password_hash"] === "string" && stored["owner_password_hash"]
+      ? stored["owner_password_hash"]
+      : undefined;
+  const legacy =
+    typeof stored["owner_password"] === "string" && stored["owner_password"]
+      ? stored["owner_password"]
+      : undefined;
   return { data: stored, hash, legacy };
 }
 
@@ -106,7 +126,10 @@ async function issueSession(hash: string) {
 }
 
 async function writeSecrets(db: AdminDb, data: Record<string, unknown>, onlyIfNoHash = false) {
-  let query = db.from("settings").update({ data: data as unknown as Json }).eq("id", SETTINGS_ID);
+  let query = db
+    .from("settings")
+    .update({ data: data as unknown as Json })
+    .eq("id", SETTINGS_ID);
   if (onlyIfNoHash) query = query.is("data->>owner_password_hash", null);
   const { data: rows, error } = await query.select("id");
   if (error) throw new Error(error.message);
@@ -182,7 +205,8 @@ export async function changeOwnerPassword(token: string, current: string, next: 
   const key = `owner:ip:${clientIp()}`;
   await consumeAttempt(store, key, OWNER_IP);
   const { data, hash } = await readSecrets(db);
-  if (!hash || !(await verifyPassword(current, hash))) throw new Error("La contraseña actual no es correcta");
+  if (!hash || !(await verifyPassword(current, hash)))
+    throw new Error("La contraseña actual no es correcta");
   await clearAttempts(store, key);
   const newHash = await hashPassword(next);
   await writeSecrets(db, { ...data, owner_password_hash: newHash });
@@ -194,7 +218,9 @@ export async function readOwnerSettingsRow(db: AdminDb): Promise<Record<string, 
 }
 
 export async function saveOwnerSettingsRow(db: AdminDb, data: Record<string, unknown>) {
-  const { error } = await db.from("settings").upsert({ id: SETTINGS_ID, data: data as unknown as Json });
+  const { error } = await db
+    .from("settings")
+    .upsert({ id: SETTINGS_ID, data: data as unknown as Json });
   if (error) throw new Error(error.message);
 }
 
@@ -211,7 +237,10 @@ export interface PortalMember {
 
 const BAD_CREDENTIALS = "Teléfono o PIN incorrectos";
 
-export async function authenticateMember(phone: string, pin: string): Promise<{ db: AdminDb; member: PortalMember }> {
+export async function authenticateMember(
+  phone: string,
+  pin: string,
+): Promise<{ db: AdminDb; member: PortalMember }> {
   const db = await adminDb();
   const store = supabaseStore(db);
   const ipKey = `m:ip:${clientIp()}`;
@@ -221,7 +250,11 @@ export async function authenticateMember(phone: string, pin: string): Promise<{ 
   const phoneKey = `m:phone:${phone}`;
   await consumeAttempt(store, phoneKey, MEMBER_PHONE);
 
-  const { data, error } = await db.from("members").select("id, first_name, schedule, active, pin").eq("phone", phone).maybeSingle();
+  const { data, error } = await db
+    .from("members")
+    .select("id, first_name, schedule, active, pin")
+    .eq("phone", phone)
+    .maybeSingle();
   if (error) throw new Error(error.message);
   // Same work and same message whether the phone exists or not.
   const stored = data?.pin ?? "";
@@ -233,7 +266,15 @@ export async function authenticateMember(phone: string, pin: string): Promise<{ 
   }
   await clearAttempts(store, phoneKey);
   if (!data.active) throw new Error("Tu ficha está inactiva. Contacta con el centro.");
-  return { db, member: { id: data.id, first_name: data.first_name, schedule: (data.schedule ?? {}) as Record<string, string>, active: data.active } };
+  return {
+    db,
+    member: {
+      id: data.id,
+      first_name: data.first_name,
+      schedule: (data.schedule ?? {}) as Record<string, string>,
+      active: data.active,
+    },
+  };
 }
 
 /** Cap on write endpoints that are reachable with valid credentials (avoids request spam). */

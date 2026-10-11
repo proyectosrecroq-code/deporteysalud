@@ -38,7 +38,8 @@ export default defineConfig({
             },
             {
               // Self-hosted fonts never change under the same URL.
-              urlPattern: ({ url }: { url: URL }) => url.origin === self.location.origin && url.pathname.startsWith("/fonts/"),
+              urlPattern: ({ url }: { url: URL }) =>
+                url.origin === self.location.origin && url.pathname.startsWith("/fonts/"),
               handler: "CacheFirst",
               options: { cacheName: "fonts", expiration: { maxEntries: 12 } },
             },

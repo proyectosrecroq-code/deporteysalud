@@ -61,7 +61,8 @@ export function parseDate(value: string, now = new Date()): string | null | unde
   if (!v) return null;
   let y: number, m: number, d: number;
   let match: RegExpExecArray | null;
-  if ((match = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ].*)?$/.exec(v))) [y, m, d] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  if ((match = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ].*)?$/.exec(v)))
+    [y, m, d] = [Number(match[1]), Number(match[2]), Number(match[3])];
   else if ((match = /^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2}|\d{4})$/.exec(v))) {
     d = Number(match[1]);
     m = Number(match[2]);
@@ -84,11 +85,15 @@ export function parseTime(value: string): string | null {
     const min = Number(match[2]);
     if (match[3] === "pm" && h < 12) h += 12;
     if (match[3] === "am" && h === 12) h = 0;
-    return h < 24 && min < 60 ? `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}` : null;
+    return h < 24 && min < 60
+      ? `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`
+      : null;
   }
   if (/^0?\.\d+$/.test(v)) {
     const total = Math.round(Number(v) * 1440);
-    return total < 1440 ? `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}` : null;
+    return total < 1440
+      ? `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`
+      : null;
   }
   return null;
 }
@@ -137,36 +142,64 @@ export interface ImportPlan {
 export function planMemberImport(rows: ImportRow[], ctx: ImportContext): ImportPlan {
   const plan: ImportPlan = { inserts: [], updates: [], errors: [] };
   const byPhone = new Map(ctx.members.map((m) => [m.phone, m]));
-  const sim: SchedMember[] = ctx.members.map((m) => ({ id: m.id, active: m.active, schedule: { ...m.schedule } }));
+  const sim: SchedMember[] = ctx.members.map((m) => ({
+    id: m.id,
+    active: m.active,
+    schedule: { ...m.schedule },
+  }));
   const seen = new Map<string, number>();
   const known = new Map(ctx.conditions.map((c) => [strip(c), c]));
   const times = allowedTimes(ctx.classTimes);
 
   for (const r of rows) {
     const fail = (message: string) => plan.errors.push({ row: r.row, phone: r.phone, message });
-    if (!r.first_name.trim()) { fail("Falta el nombre"); continue; }
+    if (!r.first_name.trim()) {
+      fail("Falta el nombre");
+      continue;
+    }
     const phone = normalizePhone(r.phone);
-    if (!/^\+?\d{6,15}$/.test(phone)) { fail("Teléfono no válido (6-15 dígitos)"); continue; }
-    if (seen.has(phone)) { fail(`Teléfono repetido en el archivo (fila ${seen.get(phone)})`); continue; }
+    if (!/^\+?\d{6,15}$/.test(phone)) {
+      fail("Teléfono no válido (6-15 dígitos)");
+      continue;
+    }
+    if (seen.has(phone)) {
+      fail(`Teléfono repetido en el archivo (fila ${seen.get(phone)})`);
+      continue;
+    }
     seen.set(phone, r.row);
 
     let pin: string | undefined;
     if (r.pin.trim()) {
       const p = r.pin.trim();
-      if (!loginPin.safeParse(p).success) { fail("PIN no válido (4-8 dígitos)"); continue; }
-      if (isWeakPin(p)) { fail("PIN demasiado fácil de adivinar (0000, 1234, repetidos o secuencias)"); continue; }
+      if (!loginPin.safeParse(p).success) {
+        fail("PIN no válido (4-8 dígitos)");
+        continue;
+      }
+      if (isWeakPin(p)) {
+        fail("PIN demasiado fácil de adivinar (0000, 1234, repetidos o secuencias)");
+        continue;
+      }
       pin = p;
     }
 
     const birth = parseDate(r.birth_date);
-    if (birth === undefined || (birth && (birth > ctx.today || birth < "1900-01-01"))) { fail("Fecha de nacimiento no válida (usa AAAA-MM-DD o DD/MM/AAAA)"); continue; }
+    if (birth === undefined || (birth && (birth > ctx.today || birth < "1900-01-01"))) {
+      fail("Fecha de nacimiento no válida (usa AAAA-MM-DD o DD/MM/AAAA)");
+      continue;
+    }
     const join = parseDate(r.join_date);
-    if (join === undefined) { fail("Fecha de alta no válida (usa AAAA-MM-DD o DD/MM/AAAA)"); continue; }
+    if (join === undefined) {
+      fail("Fecha de alta no válida (usa AAAA-MM-DD o DD/MM/AAAA)");
+      continue;
+    }
 
     let planDays: number | undefined;
     if (r.plan_days.trim()) {
       planDays = Number(r.plan_days);
-      if (!Number.isInteger(planDays) || ctx.tariffs[String(planDays)] === undefined) { fail(`No existe tarifa de ${r.plan_days} días`); continue; }
+      if (!Number.isInteger(planDays) || ctx.tariffs[String(planDays)] === undefined) {
+        fail(`No existe tarifa de ${r.plan_days} días`);
+        continue;
+      }
     }
 
     const schedule: Partial<Record<Weekday, string>> = {};
@@ -175,13 +208,24 @@ export function planMemberImport(rows: ImportRow[], ctx: ImportContext): ImportP
       const raw = r.times[d];
       if (!raw) continue;
       const t = parseTime(raw);
-      if (!t || !times.includes(t)) { fail(`Hora no válida el ${d}: "${raw}"`); bad = true; break; }
-      if (!ctx.openDays.includes(d)) { fail(`El centro no abre el ${d}`); bad = true; break; }
+      if (!t || !times.includes(t)) {
+        fail(`Hora no válida el ${d}: "${raw}"`);
+        bad = true;
+        break;
+      }
+      if (!ctx.openDays.includes(d)) {
+        fail(`El centro no abre el ${d}`);
+        bad = true;
+        break;
+      }
       schedule[d] = t;
     }
     if (bad) continue;
 
-    const wanted = r.conditions.split(/[;,]/).map((c) => c.trim()).filter(Boolean);
+    const wanted = r.conditions
+      .split(/[;,]/)
+      .map((c) => c.trim())
+      .filter(Boolean);
     const conditions: string[] = [];
     const unknown: string[] = [];
     for (const c of wanted) {
@@ -189,7 +233,10 @@ export function planMemberImport(rows: ImportRow[], ctx: ImportContext): ImportP
       if (!canonical) unknown.push(c);
       else if (!conditions.includes(canonical)) conditions.push(canonical);
     }
-    if (unknown.length) { fail(`Condición desconocida: ${unknown.join(", ")} (añádela antes en Ajustes)`); continue; }
+    if (unknown.length) {
+      fail(`Condición desconocida: ${unknown.join(", ")} (añádela antes en Ajustes)`);
+      continue;
+    }
 
     const existing = byPhone.get(phone);
     const placing = Object.keys(schedule).length > 0 && (existing ? existing.active : true);
@@ -200,7 +247,10 @@ export function planMemberImport(rows: ImportRow[], ctx: ImportContext): ImportP
         err = validateAssignment(others, existing?.id ?? null, d, t, ctx.capacity, ctx.overlapMax);
         if (err) break;
       }
-      if (err) { fail(err); continue; }
+      if (err) {
+        fail(err);
+        continue;
+      }
     }
     if (Object.keys(schedule).length) {
       if (existing) {
@@ -247,7 +297,11 @@ export interface ExercisePlan {
   errors: { row: number; message: string }[];
 }
 
-export function planExerciseImport(json: Record<string, unknown>[], categories: string[], existing: string[]): ExercisePlan {
+export function planExerciseImport(
+  json: Record<string, unknown>[],
+  categories: string[],
+  existing: string[],
+): ExercisePlan {
   const plan: ExercisePlan = { rows: [], skipped: 0, errors: [] };
   const names = new Set(existing.map((n) => strip(n)));
   const cats = new Map(categories.map((c) => [strip(c), c]));
@@ -257,10 +311,18 @@ export function planExerciseImport(json: Record<string, unknown>[], categories: 
     if (!Object.values(r).some(Boolean)) return;
     const name = r["nombre"] ?? "";
     if (!name) return void plan.errors.push({ row: i + 2, message: "Falta el nombre" });
-    if (name.length > 120) return void plan.errors.push({ row: i + 2, message: "Nombre demasiado largo" });
+    if (name.length > 120)
+      return void plan.errors.push({ row: i + 2, message: "Nombre demasiado largo" });
     const category = cats.get(strip(r["categoria"] || "Fuerza"));
-    if (!category) return void plan.errors.push({ row: i + 2, message: `Categoría desconocida: ${r["categoria"]}` });
-    if (names.has(strip(name))) { plan.skipped++; return; }
+    if (!category)
+      return void plan.errors.push({
+        row: i + 2,
+        message: `Categoría desconocida: ${r["categoria"]}`,
+      });
+    if (names.has(strip(name))) {
+      plan.skipped++;
+      return;
+    }
     names.add(strip(name));
     plan.rows.push({ name, category });
   });

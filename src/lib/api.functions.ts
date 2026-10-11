@@ -6,7 +6,14 @@ import type { Json } from "@/integrations/supabase/types";
 import { z } from "zod";
 import { AUTH_REQUIRED } from "./auth-errors";
 import { importRowSchema, MAX_IMPORT_ROWS, planMemberImport } from "./import-members";
-import { allowedTimes, madridISO, madridToday, toMin, validateAssignment, weekSchedules } from "./schedule";
+import {
+  allowedTimes,
+  madridISO,
+  madridToday,
+  toMin,
+  validateAssignment,
+  weekSchedules,
+} from "./schedule";
 import { canRecordLoad } from "./workout-loads";
 import {
   OWNER_SCHEMAS,
@@ -47,15 +54,21 @@ const loose = (db: unknown) => db as SupabaseClient;
 
 function dbError(error: { code?: string; message: string }): Error {
   console.error("[db]", error.code, error.message);
-  if (error.code === "23505") return new Error("Ya existe un registro con esos datos (por ejemplo, un teléfono repetido).");
-  if (error.code === "23503") return new Error("El registro hace referencia a datos que no existen.");
+  if (error.code === "23505")
+    return new Error("Ya existe un registro con esos datos (por ejemplo, un teléfono repetido).");
+  if (error.code === "23503")
+    return new Error("El registro hace referencia a datos que no existen.");
   return new Error("No se pudo guardar en la base de datos.");
 }
 
 async function fetchAll(db: SupabaseClient, table: string, columns = "*"): Promise<Row[]> {
   const rows: Row[] = [];
   for (let from = 0; ; from += PAGE) {
-    const { data, error } = await db.from(table).select(columns).order("id").range(from, from + PAGE - 1);
+    const { data, error } = await db
+      .from(table)
+      .select(columns)
+      .order("id")
+      .range(from, from + PAGE - 1);
     if (error) throw dbError(error);
     const page = (data ?? []) as unknown as Row[];
     rows.push(...page);
@@ -68,7 +81,18 @@ const DEFAULT_SETTINGS = {
   overlap_max: 1,
   tariffs: { "2": 90, "3": 120, "4": 150 },
   open_days: ["L", "M", "X", "J", "V"],
-  class_times: ["07:30", "08:30", "09:30", "10:30", "11:30", "16:30", "17:30", "18:30", "19:30", "20:30"],
+  class_times: [
+    "07:30",
+    "08:30",
+    "09:30",
+    "10:30",
+    "11:30",
+    "16:30",
+    "17:30",
+    "18:30",
+    "19:30",
+    "20:30",
+  ],
   payment_methods: ["BIZUM", "EFECTIVO", "TARJETA", "TRANSFERENCIA"],
   exercise_categories: ["Calentamiento", "Activación", "Fuerza", "Aeróbico", "Core", "Movilidad"],
 };
@@ -100,7 +124,9 @@ export const ownerLogin = createServerFn({ method: "POST" })
 
 export const ownerChangePassword = createServerFn({ method: "POST" })
   .validator(input(z.object({ token, current: z.string().min(1).max(128), next: passwordStr })))
-  .handler(async ({ data }) => (await auth()).changeOwnerPassword(data.token, data.current, data.next));
+  .handler(async ({ data }) =>
+    (await auth()).changeOwnerPassword(data.token, data.current, data.next),
+  );
 
 // ---------------------------------------------------------------------------
 // Owner data
@@ -118,9 +144,17 @@ export const ownerLoad = createServerFn({ method: "POST" })
     return out;
   });
 
-async function assertScheduleFits(db: SupabaseClient, row: z.output<typeof memberSchema>, settings: PublicSettings) {
+async function assertScheduleFits(
+  db: SupabaseClient,
+  row: z.output<typeof memberSchema>,
+  settings: PublicSettings,
+) {
   if (!row.active) return;
-  const all = (await fetchAll(db, "members", "id, active, schedule")) as { id: string; active: boolean; schedule: Record<string, string> }[];
+  const all = (await fetchAll(db, "members", "id, active, schedule")) as {
+    id: string;
+    active: boolean;
+    schedule: Record<string, string>;
+  }[];
   const current = row.id ? all.find((m) => m.id === row.id) : undefined;
   const allowed = allowedTimes(settings.class_times);
   for (const [day, time] of Object.entries(row.schedule)) {
@@ -128,7 +162,14 @@ async function assertScheduleFits(db: SupabaseClient, row: z.output<typeof membe
       if (!settings.open_days.includes(day)) throw new Error(`El centro no abre el ${day}.`);
       if (!allowed.includes(time as string)) throw new Error(`${time} no es una hora de clase.`);
     }
-    const err = validateAssignment(all, row.id ?? null, day, time as string, settings.capacity, settings.overlap_max);
+    const err = validateAssignment(
+      all,
+      row.id ?? null,
+      day,
+      time as string,
+      settings.capacity,
+      settings.overlap_max,
+    );
     if (err) throw new Error(err);
   }
 }
@@ -159,27 +200,38 @@ export const ownerMutate = createServerFn({ method: "POST" })
       return { rows: [] as Row[] };
     }
     if (data.action === "deleteAll") {
-      if (!["members", "exercises", "conditions"].includes(table)) throw new Error("Operación no permitida para esta tabla.");
+      if (!["members", "exercises", "conditions"].includes(table))
+        throw new Error("Operación no permitida para esta tabla.");
       const { error } = await db.from(table).delete().not("id", "is", null);
       if (error) throw dbError(error);
       return { rows: [] as Row[] };
     }
 
     if (!data.rows?.length) return { rows: [] as Row[] };
-    if (data.onConflict && table !== "payments") throw new Error("onConflict solo se admite en pagos.");
+    if (data.onConflict && table !== "payments")
+      throw new Error("onConflict solo se admite en pagos.");
     const schema = OWNER_SCHEMAS[table] as z.ZodType<Plain>;
-    let rows: Plain[] = data.rows.map((r, i) => parseOrThrow(schema, r, data.rows!.length > 1 ? `Fila ${i + 1}` : "Datos"));
+    let rows: Plain[] = data.rows.map((r, i) =>
+      parseOrThrow(schema, r, data.rows!.length > 1 ? `Fila ${i + 1}` : "Datos"),
+    );
 
     if (table === "members") {
       const settings = publicSettings(await readOwnerSettingsRow(admin));
-      for (const r of rows) await assertScheduleFits(db, r as z.output<typeof memberSchema>, settings);
+      for (const r of rows)
+        await assertScheduleFits(db, r as z.output<typeof memberSchema>, settings);
     }
     if (table === "workouts") {
       const today = madridISO();
       rows = (rows as z.output<typeof workoutSchema>[]).map((w) =>
         canRecordLoad(w.date, today)
           ? w
-          : { ...w, blocks: w.blocks.map((b) => ({ ...b, items: b.items.map(({ recordedLoad: _drop, ...item }) => item) })) },
+          : {
+              ...w,
+              blocks: w.blocks.map((b) => ({
+                ...b,
+                items: b.items.map(({ recordedLoad: _drop, ...item }) => item),
+              })),
+            },
       );
     }
     if (data.action === "insertMany" && (table === "exercises" || table === "conditions")) {
@@ -202,7 +254,10 @@ export const ownerMutate = createServerFn({ method: "POST" })
     } else {
       // One row per call: bulk upserts with different key sets would null out the missing columns.
       for (const r of rows) {
-        const { data: out, error } = await db.from(table).upsert(r, data.onConflict ? { onConflict: data.onConflict } : undefined).select();
+        const { data: out, error } = await db
+          .from(table)
+          .upsert(r, data.onConflict ? { onConflict: data.onConflict } : undefined)
+          .select();
         if (error) throw dbError(error);
         saved.push(...((out ?? []) as Row[]));
       }
@@ -257,11 +312,20 @@ export const ownerImportMembers = createServerFn({ method: "POST" })
       const { error } = await db.from("members").insert({ ...values, pin });
       if (error) {
         console.error("[import]", row, error.code, error.message);
-        errors.push({ row, phone: values.phone, message: error.code === "23505" ? "El teléfono ya existe" : "No se pudo guardar la fila" });
+        errors.push({
+          row,
+          phone: values.phone,
+          message: error.code === "23505" ? "El teléfono ya existe" : "No se pudo guardar la fila",
+        });
         continue;
       }
       inserted++;
-      if (!values.pin) generated.push({ name: `${values.first_name} ${values.last_name}`.trim(), phone: values.phone, pin });
+      if (!values.pin)
+        generated.push({
+          name: `${values.first_name} ${values.last_name}`.trim(),
+          phone: values.phone,
+          pin,
+        });
     }
     let updated = 0;
     for (const { row, id, patch } of plan.updates) {
@@ -279,19 +343,59 @@ export const ownerImportMembers = createServerFn({ method: "POST" })
 // Backup / restore
 // ---------------------------------------------------------------------------
 
-const restoreMember = memberSchema.extend({ id: z.string().uuid(), pin: loginPin, created_at: z.string().max(40).optional() });
+const restoreMember = memberSchema.extend({
+  id: z.string().uuid(),
+  pin: loginPin,
+  created_at: z.string().max(40).optional(),
+});
 const backupSchema = z.object({
   members: z.array(restoreMember).max(5000).default([]),
-  payments: z.array(paymentSchema.extend({ id: z.string().uuid() })).max(20000).default([]),
-  exercises: z.array(exerciseSchema.extend({ id: z.string().uuid() })).max(5000).default([]),
-  workouts: z.array(workoutSchema.extend({ id: z.string().uuid(), created_at: z.string().max(40).optional() })).max(20000).default([]),
-  conditions: z.array(conditionSchema.extend({ id: z.string().uuid() })).max(2000).default([]),
-  member_requests: z.array(requestSchema.extend({ id: z.string().uuid(), created_at: z.string().max(40).optional() })).max(20000).default([]),
-  settings: z.array(z.object({ data: z.record(z.string(), z.unknown()) })).max(2).default([]),
+  payments: z
+    .array(paymentSchema.extend({ id: z.string().uuid() }))
+    .max(20000)
+    .default([]),
+  exercises: z
+    .array(exerciseSchema.extend({ id: z.string().uuid() }))
+    .max(5000)
+    .default([]),
+  workouts: z
+    .array(
+      workoutSchema.extend({ id: z.string().uuid(), created_at: z.string().max(40).optional() }),
+    )
+    .max(20000)
+    .default([]),
+  conditions: z
+    .array(conditionSchema.extend({ id: z.string().uuid() }))
+    .max(2000)
+    .default([]),
+  member_requests: z
+    .array(
+      requestSchema.extend({ id: z.string().uuid(), created_at: z.string().max(40).optional() }),
+    )
+    .max(20000)
+    .default([]),
+  settings: z
+    .array(z.object({ data: z.record(z.string(), z.unknown()) }))
+    .max(2)
+    .default([]),
 });
 
-const DELETE_ORDER = ["member_requests", "workouts", "payments", "members", "exercises", "conditions"] as const;
-const INSERT_ORDER = ["members", "payments", "workouts", "member_requests", "exercises", "conditions"] as const;
+const DELETE_ORDER = [
+  "member_requests",
+  "workouts",
+  "payments",
+  "members",
+  "exercises",
+  "conditions",
+] as const;
+const INSERT_ORDER = [
+  "members",
+  "payments",
+  "workouts",
+  "member_requests",
+  "exercises",
+  "conditions",
+] as const;
 
 async function wipe(db: SupabaseClient) {
   for (const t of DELETE_ORDER) {
@@ -311,11 +415,16 @@ async function fill(db: SupabaseClient, data: Record<string, Row[]>) {
 
 function assertBackupConsistent(b: z.output<typeof backupSchema>) {
   const ids = new Set(b.members.map((m) => m.id));
-  if (ids.size !== b.members.length) throw new Error("La copia tiene socios con identificador repetido.");
-  if (new Set(b.members.map((m) => m.phone)).size !== b.members.length) throw new Error("La copia tiene teléfonos repetidos.");
+  if (ids.size !== b.members.length)
+    throw new Error("La copia tiene socios con identificador repetido.");
+  if (new Set(b.members.map((m) => m.phone)).size !== b.members.length)
+    throw new Error("La copia tiene teléfonos repetidos.");
   for (const list of [b.payments, b.workouts, b.member_requests])
-    for (const r of list) if (!ids.has(r.member_id)) throw new Error("La copia tiene registros de socios que no existen en ella.");
-  if (new Set(b.payments.map((p) => `${p.member_id}|${p.month}`)).size !== b.payments.length) throw new Error("La copia tiene pagos repetidos para el mismo mes.");
+    for (const r of list)
+      if (!ids.has(r.member_id))
+        throw new Error("La copia tiene registros de socios que no existen en ella.");
+  if (new Set(b.payments.map((p) => `${p.member_id}|${p.month}`)).size !== b.payments.length)
+    throw new Error("La copia tiene pagos repetidos para el mismo mes.");
 }
 
 export const ownerRestore = createServerFn({ method: "POST" })
@@ -327,7 +436,9 @@ export const ownerRestore = createServerFn({ method: "POST" })
     // 1) Validate everything before touching the database.
     const backup = parseOrThrow(backupSchema, data.backup, "Copia de seguridad");
     assertBackupConsistent(backup);
-    const incoming = backup.settings[0] ? settingsSchema.safeParse(publicSettings(backup.settings[0].data)) : null;
+    const incoming = backup.settings[0]
+      ? settingsSchema.safeParse(publicSettings(backup.settings[0].data))
+      : null;
 
     // 2) Snapshot, replace, and put the snapshot back if anything fails halfway.
     const snapshot: Record<string, Row[]> = {};
@@ -341,11 +452,19 @@ export const ownerRestore = createServerFn({ method: "POST" })
         await fill(db, snapshot);
       } catch (rollback) {
         console.error("[restore] rollback failed", rollback);
-        throw new Error("La restauración falló y no se pudieron recuperar los datos anteriores. No cierres esta pantalla y contacta con soporte.");
+        throw new Error(
+          "La restauración falló y no se pudieron recuperar los datos anteriores. No cierres esta pantalla y contacta con soporte.",
+        );
       }
-      throw new Error(`La restauración falló; se han recuperado los datos anteriores. Motivo: ${(e as Error).message}`);
+      throw new Error(
+        `La restauración falló; se han recuperado los datos anteriores. Motivo: ${(e as Error).message}`,
+      );
     }
-    if (incoming?.success) await saveOwnerSettingsRow(owner, { ...(await readOwnerSettingsRow(owner)), ...incoming.data });
+    if (incoming?.success)
+      await saveOwnerSettingsRow(owner, {
+        ...(await readOwnerSettingsRow(owner)),
+        ...incoming.data,
+      });
     return { ok: true, members: backup.members.length };
   });
 
@@ -363,15 +482,21 @@ export const memberPortal = createServerFn({ method: "POST" })
     const { db, member } = await authenticateMember(data.phone, data.pin);
     const client = loose(db);
     const times = allowedTimes(publicSettings(await readOwnerSettingsRow(db)).class_times);
-    const everyone = (await fetchAll(client, "members", "id, first_name, schedule, active")).filter((m) => m["active"]) as unknown as {
+    const everyone = (await fetchAll(client, "members", "id, first_name, schedule, active")).filter(
+      (m) => m["active"],
+    ) as unknown as {
       id: string;
       first_name: string;
       active: boolean;
       schedule: Record<string, string>;
     }[];
-    const approved = (await fetchAll(client, "member_requests", "member_id, type, day, desired_time, status, created_at")).filter(
-      (r) => r["status"] === "aprobado",
-    ) as unknown as Parameters<typeof weekSchedules>[1];
+    const approved = (
+      await fetchAll(
+        client,
+        "member_requests",
+        "member_id, type, day, desired_time, status, created_at",
+      )
+    ).filter((r) => r["status"] === "aprobado") as unknown as Parameters<typeof weekSchedules>[1];
     // Same rules as the owner's agenda: approved absences/changes of this week apply to everybody.
     const week = weekSchedules(everyone, approved, madridToday());
     const me = week.find((m) => m.id === member.id);
@@ -379,7 +504,10 @@ export const memberPortal = createServerFn({ method: "POST" })
     const sessions = Object.entries(me?.schedule ?? {}).map(([day, time]) => {
       const t = toMin(time);
       const mates = week
-        .filter((o) => o.id !== member.id && o.schedule[day] && Math.abs(toMin(o.schedule[day]!) - t) < 60)
+        .filter(
+          (o) =>
+            o.id !== member.id && o.schedule[day] && Math.abs(toMin(o.schedule[day]!) - t) < 60,
+        )
         .map((o) => o.first_name); // first name only (data protection)
       return { day, time, mates };
     });
@@ -414,7 +542,8 @@ export const memberRequest = createServerFn({ method: "POST" })
     if (data.type === "cambio") {
       if (!data.desired_time) throw new Error("Indica la hora que prefieres.");
       const s = publicSettings(await readOwnerSettingsRow(db));
-      if (!allowedTimes(s.class_times).includes(data.desired_time)) throw new Error("Esa hora no es de clase.");
+      if (!allowedTimes(s.class_times).includes(data.desired_time))
+        throw new Error("Esa hora no es de clase.");
       if (data.desired_time === current) throw new Error("Ya tienes sesión a esa hora.");
     }
     const { data: pending, error: pendingError } = await client
@@ -423,8 +552,10 @@ export const memberRequest = createServerFn({ method: "POST" })
       .eq("member_id", member.id)
       .eq("status", "pendiente");
     if (pendingError) throw dbError(pendingError);
-    if ((pending?.length ?? 0) >= 5) throw new Error("Tienes demasiados avisos pendientes. Espera a que el centro los revise.");
-    if (pending?.some((p) => p.day === data.day && p.type === data.type)) throw new Error("Ya tienes un aviso pendiente igual para ese día.");
+    if ((pending?.length ?? 0) >= 5)
+      throw new Error("Tienes demasiados avisos pendientes. Espera a que el centro los revise.");
+    if (pending?.some((p) => p.day === data.day && p.type === data.type))
+      throw new Error("Ya tienes un aviso pendiente igual para ese día.");
 
     const { error } = await client.from("member_requests").insert({
       member_id: member.id,

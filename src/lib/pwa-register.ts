@@ -18,9 +18,7 @@ async function unregisterStale(): Promise<void> {
   if (!("serviceWorker" in navigator)) return;
   const registrations = await navigator.serviceWorker.getRegistrations();
   await Promise.all(
-    registrations
-      .filter((r) => r.active?.scriptURL.endsWith("/sw.js"))
-      .map((r) => r.unregister()),
+    registrations.filter((r) => r.active?.scriptURL.endsWith("/sw.js")).map((r) => r.unregister()),
   );
 }
 
